@@ -8,27 +8,54 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using InvasionWar.GameEntities.Visible;
+using InvasionWar.GameEntities.Invisible;
+using InvasionWar.GameEntities;
+using System.Timers;
 
-namespace WindowsGame1
+namespace InvasionWar
 {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+
+        public enum GameState
+        {
+            NotStarted, Started, Lost, Won
+        }
+
+        Timer gameStateChanged = new Timer();        
+
+        public GameState CurrentGameState = GameState.NotStarted;
+        public GameState NextGameState = GameState.NotStarted;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        TilingMap map;
+
+        public Vector2 OriginScreenSize;
+        public Vector2 ScreenSize;
+        public Vector2 ScreenScaleFactor;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
 
             graphics.IsFullScreen = false;
+            OriginScreenSize = new Vector2(1024, 768);
+            ScreenSize = new Vector2(768, 576);
+
+            ScreenScaleFactor = new Vector2();
+            ScreenScaleFactor.X = ScreenSize.X / OriginScreenSize.X;
+            ScreenScaleFactor.Y = ScreenSize.Y / OriginScreenSize.Y;
+
             graphics.PreferredBackBufferWidth = 768;
-            graphics.PreferredBackBufferHeight = 576;
+            graphics.PreferredBackBufferHeight = 576;            
 
             Content.RootDirectory = "Content";
+
+            Global.thisGame = this;
         }
 
         /// <summary>
@@ -44,8 +71,83 @@ namespace WindowsGame1
             base.Initialize();
         }
 
+        My2DSprite btnPlay, GameTitle, Panel, TextPlayerName, TextRoomID, TextBoxName, TextBoxRoom;
+
         List<My2DSprite> sprites;
 
+        public void LoadScene() {
+            sprites.Clear();
+
+            switch (CurrentGameState)
+            {
+                case GameState.NotStarted:
+                    // background                    
+                    sprites.Add(StaticSprite.CreateSprite(0, 0, ScreenScaleFactor, @"Sprite/GameUI/Background", 1.0f));
+
+                    // title
+                    if (GameTitle == null)
+                    {
+                        GameTitle = StaticSprite.CreateSprite(200, 182, ScreenScaleFactor, @"Sprite/GameUI/Title", 0.9f);
+                    }
+                    sprites.Add(GameTitle);
+
+                    // panel
+                    if (Panel==null) {
+                        Panel = StaticSprite.CreateSprite(215, 315, ScreenScaleFactor, @"Sprite/GameUI/Panel", 0.8f);
+                    }
+                    sprites.Add(Panel);
+
+                    if (TextPlayerName== null){
+                        TextPlayerName = StaticSprite.CreateSprite(273, 360, ScreenScaleFactor, @"Sprite/GameUI/TextPlayerName", 0.8f);
+                    }
+                    sprites.Add(TextPlayerName);
+
+                    if (TextRoomID == null) {
+                        TextRoomID = StaticSprite.CreateSprite(273, 430, ScreenScaleFactor, @"Sprite/GameUI/TextRoomID", 0.8f);
+                    }
+                    sprites.Add(TextRoomID);
+                    if (TextBoxName == null) {
+                        TextBoxName =StaticSprite.CreateSprite(454, 350, ScreenScaleFactor, @"Sprite/GameUI/TextBox", 0.8f);
+                    }
+                    sprites.Add(TextBoxName);
+
+                    if (TextBoxRoom == null) {
+                        TextBoxRoom = StaticSprite.CreateSprite(454, 420, ScreenScaleFactor, @"Sprite/GameUI/TextBox", 0.8f);
+                    }
+                    sprites.Add(TextBoxRoom);
+
+                    // btn play
+                    if (btnPlay == null)
+                    {
+                        btnPlay = StaticSprite.CreateSprite(440, 538, ScreenScaleFactor, @"Sprite/GameUI/btnPlay", 0.8f);
+                        btnPlay.OnMouseClick += TransitionNotStartedToStarted;
+                        Global.gMouseHelper.Register(btnPlay);
+                    }
+
+                    sprites.Add(btnPlay);
+
+                    // small top icons
+                    sprites.Add(StaticSprite.CreateSprite(700, 22, ScreenScaleFactor, @"Sprite/GameUI/btnShop", 0.9f));
+                    sprites.Add(StaticSprite.CreateSprite(780, 22, ScreenScaleFactor, @"Sprite/GameUI/btnSetting", 0.9f));
+                    sprites.Add(StaticSprite.CreateSprite(860, 22, ScreenScaleFactor, @"Sprite/GameUI/btnHelp", 0.9f));
+                    sprites.Add(StaticSprite.CreateSprite(940, 22, ScreenScaleFactor, @"Sprite/GameUI/btnExit", 0.9f));
+
+                    break;
+
+                case GameState.Started:
+                    // background                    
+                    sprites.Add(StaticSprite.CreateSprite(0, 0, ScreenScaleFactor, @"Sprite/GameUI/Background", 1.0f));
+
+                    // small top icons
+                    sprites.Add(StaticSprite.CreateSprite(700, 22, ScreenScaleFactor, @"Sprite/GameUI/btnShop", 0.9f));
+                    sprites.Add(StaticSprite.CreateSprite(780, 22, ScreenScaleFactor, @"Sprite/GameUI/btnSetting", 0.9f));
+                    sprites.Add(StaticSprite.CreateSprite(860, 22, ScreenScaleFactor, @"Sprite/GameUI/btnHelp", 0.9f));
+                    sprites.Add(StaticSprite.CreateSprite(940, 22, ScreenScaleFactor, @"Sprite/GameUI/btnExit", 0.9f));
+                    break;
+            }
+            
+
+        }
 
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
@@ -60,46 +162,22 @@ namespace WindowsGame1
             Global.Content = this.Content; // export this one to every component
             this.IsMouseVisible = true;
             sprites = new List<My2DSprite>();
-            CreateAnAngel(100.0f, 200.0f);
-            // CreateAnIsland(0.0f, 0.0f);
 
-            string[] strTextures = {"Water", "Grass", "Highland", "Snow"};
-            int[,] MapData = new int[10, 20];
-            Random r = new Random();
+            LoadScene();
+            
+            //string[] strTextures = {"Water", "Grass", "Highland", "Snow"};
+            //int[,] MapData = new int[10, 20];
+            //Random r = new Random();
 
-            for (int i=0; i<10; i++) {
-                for (int j = 0; j < 20; j++)
-                {
-                    MapData[i, j] = r.Next() % 4;
-                }
-            }
-
-            // map = new Map(3, 5, 800, 600, @"Map\MapFragment");
-            map = new TilingMap(10, 20, 100, 100, strTextures, MapData);
-        }
-
-        private void CreateAnIsland(float left, float top)
-        {
-            My2DSprite temp;
-            List<Texture2D> textures = new List<Texture2D>();
-            textures.Add(this.Content.Load<Texture2D>(@"Sprite\Island\Lush_Island"));
-            temp = new My2DSprite(textures, left, top, 0, 0);
-            temp._Depth = 1;
-            sprites.Add(temp);
-        }
-
-        private void CreateAnAngel(float left, float top)
-        {
-            My2DSprite temp;
-            List<Texture2D> textures = new List<Texture2D>();
-            for (int i = 1; i <= 15; i++ )
-                textures.Add(this.Content.Load<Texture2D>(@"Sprite\Unit\Angel"+i.ToString("00")));
-            temp = new My2DSprite(textures, left, top, 150, 150, true);
-            temp._Depth = 0.5f;
-            temp.SetVelocity(150, 150);
-            temp.Fps = 50;
-            sprites.Add(temp);            
-        }
+            //for (int i=0; i<10; i++) {
+            //    for (int j = 0; j < 20; j++)
+            //    {
+            //        MapData[i, j] = r.Next() % 4;
+            //    }
+            //}
+            
+            //map = new TilingMap(10, 20, 100, 100, strTextures, MapData);
+        }     
 
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
@@ -131,8 +209,7 @@ namespace WindowsGame1
             Global.UpdateAll(gameTime);
 
             UpdateSprites(gameTime);
-
-            map.Update(gameTime);                 
+                       
 
             base.Update(gameTime);
         }
@@ -141,16 +218,7 @@ namespace WindowsGame1
         {
             for (int i = 0; i < sprites.Count; i++)
                 sprites[i].State = (idx == i) ? 1 : 0;
-        }
-
-        private int FindSelectedSprite(float x, float y)
-        {
-            Vector2 worldPosition = Global.gMouseHelper.GetCurrentWorldMousePoistion();
-            for (int i = 0; i < sprites.Count; i++)
-                if (sprites[i].IsSelected(worldPosition.X, worldPosition.Y)) 
-                    return i;
-            return -1;
-        }
+        }      
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -167,12 +235,39 @@ namespace WindowsGame1
                 null, 
                 Global.gMainCamera.WVP );
 
-            // TODO: Add your drawing code here
-            map.Draw(gameTime, spriteBatch);
+            // TODO: Add your drawing code here        
             for (int i = 0; i < sprites.Count; i++)
                 sprites[i].Draw(gameTime, this.spriteBatch);
             spriteBatch.End();
             base.Draw(gameTime);
         }
+
+        private void TransitionNotStartedToStarted(object sender)
+        {
+            float speed = 700;
+            float time = 1.5f;
+            NextGameState = GameState.Started;
+            GameTitle.SetTransitionTask(new Vector2(GameTitle.Left, GameTitle.Top - speed), time, TransitionCompleted);
+
+            Panel.SetTransitionTask(new Vector2(Panel.Left, Panel.Top - speed), time, TransitionCompleted);
+            TextPlayerName.SetTransitionTask(new Vector2(TextPlayerName.Left, TextPlayerName.Top - speed), time, TransitionCompleted);
+            TextRoomID.SetTransitionTask(new Vector2(TextRoomID.Left, TextRoomID.Top - speed), time, TransitionCompleted);
+            TextBoxRoom.SetTransitionTask(new Vector2(TextBoxRoom.Left, TextBoxRoom.Top - speed), time, TransitionCompleted);
+            TextBoxName.SetTransitionTask(new Vector2(TextBoxName.Left, TextBoxName.Top - speed), time, TransitionCompleted);
+
+            btnPlay.SetTransitionTask(new Vector2(btnPlay.Left, btnPlay.Top + speed), time, TransitionCompleted);
+        }
+
+        private void TransitionStartedToNotStarted(object sender)
+        {
+            
+        }
+
+        private void TransitionCompleted(object sender)
+        {
+            CurrentGameState = NextGameState;
+            LoadScene();
+        }
+    
     }
 }

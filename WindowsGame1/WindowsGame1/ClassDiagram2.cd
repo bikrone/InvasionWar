@@ -1,80 +1,89 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="WindowsGame1.Game1" Collapsed="true">
+  <Class Name="InvasionWar.Game1" Collapsed="true">
     <Position X="0.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AARQEECQAAAAAwAAAAAAAAAAAAAAAAgAAAAAAACQAAQ=</HashCode>
+      <HashCode>AARQEECQAAAAAwAAQAYACAQAAAAAAAgAAAAAAACQAAQ=</HashCode>
       <FileName>Game1.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="WindowsGame1.My2DSprite" Collapsed="true">
-    <Position X="0.5" Y="6.25" Width="1.5" />
+  <Class Name="InvasionWar.GameEntities.Visible.My2DSprite" Collapsed="true">
+    <Position X="0.5" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAYAKEBYQAEgjAAAMAIEAiAAAKEACACgMADKAUABA=</HashCode>
-      <FileName>My2DSprite.cs</FileName>
+      <FileName>GameEntities\Visible\My2DSprite.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
-  <Class Name="WindowsGame1.Program" Collapsed="true">
+  <Class Name="InvasionWar.Program" Collapsed="true">
     <Position X="0.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>Program.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="WindowsGame1.GameEntity">
+  <Class Name="InvasionWar.GameEntities.GameEntity">
     <Position X="4" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>GameEntity.cs</FileName>
+      <FileName>GameEntities\GameEntity.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="WindowsGame1.VisibleGameEntity">
+  <Class Name="InvasionWar.GameEntities.Visible.VisibleGameEntity">
     <Position X="2.25" Y="4" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>VisibleGameEntity.cs</FileName>
+      <FileName>GameEntities\Visible\VisibleGameEntity.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="WindowsGame1.InvisibleGameEntity">
+  <Class Name="InvasionWar.GameEntities.Invisible.InvisibleGameEntity">
     <Position X="8.25" Y="4" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>InvisibleGameEntity.cs</FileName>
+      <FileName>GameEntities\Invisible\InvisibleGameEntity.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="WindowsGame1.MouseHelper">
+  <Class Name="InvasionWar.GameEntities.Invisible.MouseHelper">
     <Position X="7" Y="5.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQAAAAIAAAAAACACBAAACABAAAAQAAACAAAAAAAAgA=</HashCode>
-      <FileName>MouseHelper.cs</FileName>
+      <HashCode>AAQAAAAIAAAAAACACBAAICABAAAAQABACAAAAAAAAgA=</HashCode>
+      <FileName>GameEntities\Invisible\MouseHelper.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
-  <Class Name="WindowsGame1.KeyboardHelper">
+  <Class Name="InvasionWar.GameEntities.Invisible.KeyboardHelper">
     <Position X="8.75" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAAAAAAAAAAAACAAAACQAAAACCAAQAAAAAA=</HashCode>
-      <FileName>KeyboardHelper.cs</FileName>
+      <FileName>GameEntities\Invisible\KeyboardHelper.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="WindowsGame1.Camera">
+  <Class Name="InvasionWar.GameEntities.Invisible.Camera">
     <Position X="10.5" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQEAAAIABAAAAAAACAIAAAQAAAFACAAAAACAAAQBAA=</HashCode>
-      <FileName>Camera.cs</FileName>
+      <FileName>GameEntities\Invisible\Camera.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="WindowsGame1.Map">
+  <Class Name="InvasionWar.GameEntities.Visible.Map">
     <Position X="2.5" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQFBAgAAQAAMgAABAAAAAAAAAAAAAEAAAAAAAAAEBA=</HashCode>
-      <FileName>Map.cs</FileName>
+      <FileName>GameEntities\Visible\Map.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="WindowsGame1.TilingMap">
+  <Class Name="InvasionWar.GameEntities.Visible.TilingMap">
     <Position X="4.75" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQFAAAAAAAAEgAAAAAAACAAAAAAAQMAAAAAAUABEBA=</HashCode>
-      <FileName>TilingMap.cs</FileName>
+      <FileName>GameEntities\Visible\TilingMap.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="InvasionWar.GameEntities.Visible.StaticSprite">
+    <Position X="0.5" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GameEntities\Visible\StaticSprite.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

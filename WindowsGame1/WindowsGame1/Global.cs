@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using InvasionWar.GameEntities.Visible;
+using InvasionWar.GameEntities.Invisible;
 
-namespace WindowsGame1
+namespace InvasionWar
 {
     class Global
     {
@@ -12,6 +14,9 @@ namespace WindowsGame1
         public static KeyboardHelper gKeyboardHelper = new KeyboardHelper();
         public static Camera gMainCamera = new Camera();
         public static ContentManager Content;
+
+        public static Game1 thisGame;
+
         internal static void UpdateAll(Microsoft.Xna.Framework.GameTime gameTime)
         {
             gMouseHelper.Update(gameTime);

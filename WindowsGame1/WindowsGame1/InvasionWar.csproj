@@ -107,19 +107,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Camera.cs" />
-    <Compile Include="GameEntity.cs" />
+    <Compile Include="GameEntities\Invisible\Camera.cs" />
+    <Compile Include="GameEntities\GameEntity.cs" />
     <Compile Include="Global.cs" />
-    <Compile Include="InvisibleGameEntity.cs" />
-    <Compile Include="KeyboardHelper.cs" />
-    <Compile Include="Map.cs" />
-    <Compile Include="MouseHelper.cs" />
-    <Compile Include="My2DSprite.cs" />
+    <Compile Include="GameEntities\Invisible\InvisibleGameEntity.cs" />
+    <Compile Include="GameEntities\Invisible\KeyboardHelper.cs" />
+    <Compile Include="GameEntities\Visible\Map.cs" />
+    <Compile Include="GameEntities\Invisible\MouseHelper.cs" />
+    <Compile Include="GameEntities\Visible\My2DSprite.cs" />
+    <Compile Include="Interfaces\IObservedSubject.cs" />
+    <Compile Include="Interfaces\IObserver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
-    <Compile Include="TilingMap.cs" />
-    <Compile Include="VisibleGameEntity.cs" />
+    <Compile Include="GameEntities\Visible\TilingMap.cs" />
+    <Compile Include="GameEntities\Visible\VisibleGameEntity.cs" />
+    <Compile Include="GameEntities\Visible\StaticSprite.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
@@ -155,7 +158,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
     <None Include="ClassDiagram2.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

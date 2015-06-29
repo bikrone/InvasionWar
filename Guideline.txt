@@ -1,3 +1,24 @@
 Tile: (Reference: http://gamedev.stackexchange.com/questions/20742/how-can-i-implement-hexagonal-tilemap-picking-in-xna)
-	- Original Size: 208 x 183 -> Reduced: (/2.6): 80 x 70
-	- Rectangle Size: (3/4) Width x (1/2) Height: 60 x 35
+	- Original Size: 208 x 183 -> Reduced: (/2.6): 80 x 70 -> Reduced (3/4): 60 x 53
+	- Rectangle Size: (3/4) Width x (1/2) Height: 60 x 35 -> 40 x 26
+
+Title:
+	- Position: (200, 182) -> Reduced: ()
+
+Panel
+	- Position: (215, 315)
+
+TextPlayer:
+	- Position: (273, 360)
+
+TextRoom:
+	- Position: (273, 430)
+
+TextBox:
+	- Position: (454, (350, 420))
+
+BtnPlay:
+	- Position (440, 538)
+
+Shop, Setting, Help, Exit
+	- Position ((700, 780, 860, 940), 22)
