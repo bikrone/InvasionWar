@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="GameEntities\Invisible\Camera.cs" />
     <Compile Include="GameEntities\GameEntity.cs" />
+    <Compile Include="GameEntities\Visible\HexagonMap.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="GameEntities\Invisible\InvisibleGameEntity.cs" />
     <Compile Include="GameEntities\Invisible\KeyboardHelper.cs" />

@@ -38,6 +38,8 @@ namespace InvasionWar
         public Vector2 ScreenSize;
         public Vector2 ScreenScaleFactor;
 
+        public HexagonMap hexMap;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -143,6 +145,16 @@ namespace InvasionWar
                     sprites.Add(StaticSprite.CreateSprite(780, 22, ScreenScaleFactor, @"Sprite/GameUI/btnSetting", 0.9f));
                     sprites.Add(StaticSprite.CreateSprite(860, 22, ScreenScaleFactor, @"Sprite/GameUI/btnHelp", 0.9f));
                     sprites.Add(StaticSprite.CreateSprite(940, 22, ScreenScaleFactor, @"Sprite/GameUI/btnExit", 0.9f));
+
+                    if (hexMap == null)
+                    {
+                        string[] textures = new string[3];
+                        textures[0] = "Hexa";
+                        textures[1] = "hexa_near";
+                        textures[2] = "hexa_far";
+                        hexMap = new HexagonMap((int)(375.0f*ScreenScaleFactor.X), (int)(110.0f*ScreenScaleFactor.Y), 9, 45, 26, textures);
+                    }
+
                     break;
             }
             
@@ -238,6 +250,10 @@ namespace InvasionWar
             // TODO: Add your drawing code here        
             for (int i = 0; i < sprites.Count; i++)
                 sprites[i].Draw(gameTime, this.spriteBatch);
+
+            if (hexMap != null)
+                hexMap.Draw(gameTime, spriteBatch);
+
             spriteBatch.End();
             base.Draw(gameTime);
         }

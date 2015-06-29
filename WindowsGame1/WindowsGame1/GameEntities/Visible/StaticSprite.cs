@@ -17,12 +17,12 @@ namespace InvasionWar.GameEntities.Visible
 
         }
 
-        public static StaticSprite CreateSprite(float left, float top, int width, int height, String path)
+        public static StaticSprite CreateSprite(float left, float top, int width, int height, String path, float depth = 1.0f)
         {          
             List<Texture2D> textures = new List<Texture2D>();
             textures.Add(Global.thisGame.Content.Load<Texture2D>(path));
             StaticSprite temp = new StaticSprite(textures, left, top, width, height);
-            temp._Depth = 1;
+            temp._Depth = depth;
             return temp;
         }
 

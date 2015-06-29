@@ -22,3 +22,12 @@ BtnPlay:
 
 Shop, Setting, Help, Exit
 	- Position ((700, 780, 860, 940), 22)
+
+Map:
+	- Position (375, 110)
+
+
+Score
+
+Dynamic background
+
