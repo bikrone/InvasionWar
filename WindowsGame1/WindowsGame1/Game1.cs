@@ -12,6 +12,9 @@ using InvasionWar.GameEntities.Visible;
 using InvasionWar.GameEntities.Invisible;
 using InvasionWar.GameEntities;
 using System.Timers;
+using InvasionWar.Effects;
+using InvasionWar.Effects.Animations;
+using InvasionWar.Styles;
 
 namespace InvasionWar
 {
@@ -39,6 +42,8 @@ namespace InvasionWar
         public Vector2 ScreenScaleFactor;
 
         public HexagonMap hexMap;
+
+        private Storyboard mainStoryboard = new Storyboard();
 
         public Game1()
         {
@@ -73,9 +78,9 @@ namespace InvasionWar
             base.Initialize();
         }
 
-        My2DSprite btnPlay, GameTitle, Panel, TextPlayerName, TextRoomID, TextBoxName, TextBoxRoom;
+        My2DSprite btnPlay, GameTitle, Panel, TextPlayerName, TextRoomID, TextBoxName, TextBoxRoom, btnShop, btnHelp, btnSetting, btnExit;
 
-        List<My2DSprite> sprites;
+        List<My2DSprite> sprites;       
 
         public void LoadScene() {
             sprites.Clear();
@@ -122,17 +127,42 @@ namespace InvasionWar
                     if (btnPlay == null)
                     {
                         btnPlay = StaticSprite.CreateSprite(440, 538, ScreenScaleFactor, @"Sprite/GameUI/btnPlay", 0.8f);
-                        btnPlay.OnMouseClick += TransitionNotStartedToStarted;
-                        Global.gMouseHelper.Register(btnPlay);
+                        
+                        btnPlay.OnMouseUp += TransitionNotStartedToStarted;
+
+                        ButtonStyle.Assign(btnPlay);                                          
                     }
 
                     sprites.Add(btnPlay);
 
                     // small top icons
-                    sprites.Add(StaticSprite.CreateSprite(700, 22, ScreenScaleFactor, @"Sprite/GameUI/btnShop", 0.9f));
-                    sprites.Add(StaticSprite.CreateSprite(780, 22, ScreenScaleFactor, @"Sprite/GameUI/btnSetting", 0.9f));
-                    sprites.Add(StaticSprite.CreateSprite(860, 22, ScreenScaleFactor, @"Sprite/GameUI/btnHelp", 0.9f));
-                    sprites.Add(StaticSprite.CreateSprite(940, 22, ScreenScaleFactor, @"Sprite/GameUI/btnExit", 0.9f));
+                    if (btnShop == null)
+                    {
+                        btnShop = StaticSprite.CreateSprite(700, 22, ScreenScaleFactor, @"Sprite/GameUI/btnShop", 0.9f);
+                        ButtonStyle.Assign(btnShop);                        
+                    }
+                    sprites.Add(btnShop);
+
+                    if (btnSetting == null)
+                    {
+                        btnSetting = StaticSprite.CreateSprite(780, 22, ScreenScaleFactor, @"Sprite/GameUI/btnSetting", 0.9f);
+                        ButtonStyle.Assign(btnSetting);                        
+                    }
+                    sprites.Add(btnSetting);
+
+                    if (btnHelp == null)
+                    {
+                        btnHelp = StaticSprite.CreateSprite(860, 22, ScreenScaleFactor, @"Sprite/GameUI/btnHelp", 0.9f);
+                        ButtonStyle.Assign(btnHelp);                        
+                    }
+                    sprites.Add(btnHelp);
+
+                    if (btnExit == null)
+                    {
+                        btnExit = StaticSprite.CreateSprite(940, 22, ScreenScaleFactor, @"Sprite/GameUI/btnExit", 0.9f);
+                        ButtonStyle.Assign(btnExit);                        
+                    }
+                    sprites.Add(btnExit);
 
                     break;
 
@@ -141,10 +171,33 @@ namespace InvasionWar
                     sprites.Add(StaticSprite.CreateSprite(0, 0, ScreenScaleFactor, @"Sprite/GameUI/Background", 1.0f));
 
                     // small top icons
-                    sprites.Add(StaticSprite.CreateSprite(700, 22, ScreenScaleFactor, @"Sprite/GameUI/btnShop", 0.9f));
-                    sprites.Add(StaticSprite.CreateSprite(780, 22, ScreenScaleFactor, @"Sprite/GameUI/btnSetting", 0.9f));
-                    sprites.Add(StaticSprite.CreateSprite(860, 22, ScreenScaleFactor, @"Sprite/GameUI/btnHelp", 0.9f));
-                    sprites.Add(StaticSprite.CreateSprite(940, 22, ScreenScaleFactor, @"Sprite/GameUI/btnExit", 0.9f));
+                    if (btnShop == null)
+                    {
+                        btnShop = StaticSprite.CreateSprite(700, 22, ScreenScaleFactor, @"Sprite/GameUI/btnShop", 0.9f);
+                        ButtonStyle.Assign(btnShop);                        
+                    }
+                    sprites.Add(btnShop);
+
+                    if (btnSetting == null)
+                    {
+                        btnSetting = StaticSprite.CreateSprite(780, 22, ScreenScaleFactor, @"Sprite/GameUI/btnSetting", 0.9f);
+                        ButtonStyle.Assign(btnSetting);                        
+                    }
+                    sprites.Add(btnSetting);
+
+                    if (btnHelp == null)
+                    {
+                        btnHelp = StaticSprite.CreateSprite(860, 22, ScreenScaleFactor, @"Sprite/GameUI/btnHelp", 0.9f);
+                        ButtonStyle.Assign(btnHelp);                        
+                    }
+                    sprites.Add(btnHelp);
+
+                    if (btnExit == null)
+                    {
+                        btnExit = StaticSprite.CreateSprite(940, 22, ScreenScaleFactor, @"Sprite/GameUI/btnExit", 0.9f);
+                        ButtonStyle.Assign(btnExit);                        
+                    }
+                    sprites.Add(btnExit);
 
                     if (hexMap == null)
                     {
@@ -260,18 +313,24 @@ namespace InvasionWar
 
         private void TransitionNotStartedToStarted(object sender)
         {
-            float speed = 700;
-            float time = 1.5f;
+            float distance = 700;
+            float time = 1.0f;
             NextGameState = GameState.Started;
-            GameTitle.SetTransitionTask(new Vector2(GameTitle.Left, GameTitle.Top - speed), time, TransitionCompleted);
+            mainStoryboard.Stop();
+            mainStoryboard.Clear();
+            mainStoryboard.OnCompleted += TransitionCompleted;
 
-            Panel.SetTransitionTask(new Vector2(Panel.Left, Panel.Top - speed), time, TransitionCompleted);
-            TextPlayerName.SetTransitionTask(new Vector2(TextPlayerName.Left, TextPlayerName.Top - speed), time, TransitionCompleted);
-            TextRoomID.SetTransitionTask(new Vector2(TextRoomID.Left, TextRoomID.Top - speed), time, TransitionCompleted);
-            TextBoxRoom.SetTransitionTask(new Vector2(TextBoxRoom.Left, TextBoxRoom.Top - speed), time, TransitionCompleted);
-            TextBoxName.SetTransitionTask(new Vector2(TextBoxName.Left, TextBoxName.Top - speed), time, TransitionCompleted);
+            mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, GameTitle, time, new Vector2(GameTitle.Left, GameTitle.Top - distance), false));
+            mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, Panel, time, new Vector2(Panel.Left, Panel.Top - distance), false));
+            mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, TextPlayerName, time, new Vector2(TextPlayerName.Left, TextPlayerName.Top - distance), false));
+            mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, TextRoomID, time, new Vector2(TextRoomID.Left, TextRoomID.Top - distance), false));
+            mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, TextBoxRoom, time, new Vector2(TextBoxRoom.Left, TextBoxRoom.Top - distance), false));
+            mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, TextBoxName, time, new Vector2(TextBoxName.Left, TextBoxName.Top - distance), false));
 
-            btnPlay.SetTransitionTask(new Vector2(btnPlay.Left, btnPlay.Top + speed), time, TransitionCompleted);
+            mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, btnPlay, time, new Vector2(btnPlay.Left, btnPlay.Top + distance), false));
+
+            mainStoryboard.Start();
+         
         }
 
         private void TransitionStartedToNotStarted(object sender)
@@ -283,6 +342,7 @@ namespace InvasionWar
         {
             CurrentGameState = NextGameState;
             LoadScene();
+            ((Storyboard)sender).OnCompleted -= TransitionCompleted;
         }
     
     }

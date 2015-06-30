@@ -69,12 +69,14 @@ namespace InvasionWar.GameEntities.Invisible
         
         public void Register(IObserver observer)
         {
-            observers.Add(observer);
+            if (!observers.Contains(observer))
+                observers.Add(observer);
         }
 
         public void Unregister(IObserver observer)
         {
-            observers.Remove(observer);
+            if (observers.Contains(observer))
+                observers.Remove(observer);
         }
 
         public void NotifyAll()
@@ -84,12 +86,19 @@ namespace InvasionWar.GameEntities.Invisible
             worldPositionOfMouse = Vector2.Transform(MousePos, Global.gMainCamera.InvWVP);             
             foreach (IObserver observer in observers)
             {
-                if (observer.IsAvailable() && observer.InMousePosition(worldPositionOfMouse))
+                if (observer.IsAvailable())
                 {
-                    if (IsLeftButtonUp()) observer.SendMouseMove();
-                    if (IsLeftButtonDown()) observer.SendMouseDown();
-                    if (IsLeftButtonReleased()) observer.SendMouseUp();
-                    if (IsLeftButtonPressed()) observer.SendMouseClick();
+                    if (observer.InMousePosition(worldPositionOfMouse))
+                    {
+                        if (IsLeftButtonUp()) observer.SendMouseMove();
+                        if (IsLeftButtonDown()) observer.SendMouseDown();
+                        if (IsLeftButtonReleased()) observer.SendMouseUp();
+                        if (IsLeftButtonPressed()) observer.SendMouseClick();
+                    }
+                    else
+                    {
+                        observer.SendMouseLeave();
+                    }
                 }
             }
         }

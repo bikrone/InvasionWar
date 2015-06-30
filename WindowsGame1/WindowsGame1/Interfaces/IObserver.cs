@@ -13,6 +13,7 @@ namespace InvasionWar.Interfaces
         void SendMouseClick();
         void SendMouseDown();
         void SendMouseUp();
+        void SendMouseLeave();
 
         bool InMousePosition(Vector2 MousePos);
         bool IsAvailable();

@@ -107,8 +107,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameEntities\Invisible\Effects\Animation.cs" />
+    <Compile Include="GameEntities\Invisible\Effects\Animations\ColorAnimation.cs" />
+    <Compile Include="GameEntities\Invisible\Effects\Animations\ScaleAnimation.cs" />
+    <Compile Include="GameEntities\Invisible\Effects\Animations\TranslationAnimation.cs" />
+    <Compile Include="GameEntities\Invisible\Effects\Storyboard.cs" />
     <Compile Include="GameEntities\Invisible\Camera.cs" />
     <Compile Include="GameEntities\GameEntity.cs" />
+    <Compile Include="GameEntities\Visible\Gem.cs" />
     <Compile Include="GameEntities\Visible\HexagonMap.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="GameEntities\Invisible\InvisibleGameEntity.cs" />
@@ -116,6 +122,8 @@
     <Compile Include="GameEntities\Visible\Map.cs" />
     <Compile Include="GameEntities\Invisible\MouseHelper.cs" />
     <Compile Include="GameEntities\Visible\My2DSprite.cs" />
+    <Compile Include="Helper\PolygonCollider.cs" />
+    <Compile Include="Helper\UtilityHelper.cs" />
     <Compile Include="Interfaces\IObservedSubject.cs" />
     <Compile Include="Interfaces\IObserver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -124,6 +132,8 @@
     <Compile Include="GameEntities\Visible\TilingMap.cs" />
     <Compile Include="GameEntities\Visible\VisibleGameEntity.cs" />
     <Compile Include="GameEntities\Visible\StaticSprite.cs" />
+    <Compile Include="Styles\ButtonStyle.cs" />
+    <Compile Include="Styles\CellStyle.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

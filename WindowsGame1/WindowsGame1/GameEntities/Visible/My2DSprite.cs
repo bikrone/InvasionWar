@@ -1,4 +1,6 @@
-﻿using InvasionWar.Interfaces;
+﻿using InvasionWar.Effects;
+using InvasionWar.Helper;
+using InvasionWar.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -13,21 +15,72 @@ namespace InvasionWar.GameEntities.Visible
 
     public class My2DSprite : VisibleGameEntity, IObserver
     {
+        public PolygonCollider Collider;
+
+        public void SetCollider(PolygonCollider collider) {
+            this.Collider = collider;
+        }
+
         public delegate void Del(object sender);
 
-        public class TransitionTask
-        {
-            public Vector2 toPosition;
-            public float time;
-            public Del callback;
-            public float currentTime = 0;
+        private Color overlay = new Color(255, 255, 255, 255);
 
-            public TransitionTask(Vector2 toPosition, float time, Del callback)
+        public List<Storyboard> states = new List<Storyboard>();
+
+        public Storyboard currentState = null;
+
+        public void ClearState()
+        {
+            if (currentState != null) currentState.Stop();
+            states.Clear();
+        }
+
+        public void ChangeState(int i)
+        {
+            if (i == -1)
             {
-                this.toPosition = toPosition;
-                this.time = time;
-                this.callback = callback;
+                if (currentState != null)
+                {
+                    currentState.Stop();
+                    currentState = null;
+                }
+                return;
             }
+
+            if (currentState == null || currentState != states[i])
+            {
+                if (currentState != null)
+                {
+                    currentState.Stop();
+                }
+                currentState = states[i];
+                currentState.Start();
+            }
+        }
+
+        public void AddNewState(Storyboard a)
+        {
+            states.Add(a);
+        }
+
+        public void AddNewState(Animation a)
+        {
+            Storyboard sb = new Storyboard();
+            sb.AddAnimation(a);
+            states.Add(sb);
+        }
+        
+        public Vector4 GetOverlay()
+        {
+            return new Vector4(overlay.A, overlay.B, overlay.G, overlay.R);
+        }
+
+        public void SetOverlay(Vector4 color)
+        {
+            overlay.A = (byte)color.X;
+            overlay.B = (byte)color.Y;
+            overlay.G = (byte)color.Z;
+            overlay.R = (byte)color.W;
         }
 
         private bool isEnable = true;
@@ -37,24 +90,18 @@ namespace InvasionWar.GameEntities.Visible
             set { isEnable = value; }
         }
 
-        public bool IsAvailable() { return IsEnable; }
-
-        private TransitionTask transitionTask;
-
-        public void SetTransitionTask(Vector2 toPosition, float time, Del callback)
-        {
-            transitionTask = new TransitionTask(toPosition, time, callback);
-        }
+        public bool IsAvailable() { return IsEnable; }        
 
         public Del OnMouseClick;
         public Del OnMouseDown;
         public Del OnMouseUp;
         public Del OnMouseMove;
+        public Del OnMouseLeave;
 
-        private Vector2 scale = new Vector2(1,1);
+        private Vector2 scale = new Vector2(1, 1);
         public Vector2 Scale
         {
-            get { return scale; }        
+            get { return scale; }            
         }
 
         public My2DSprite()
@@ -69,25 +116,30 @@ namespace InvasionWar.GameEntities.Visible
             Left = left;
             Top = top;
             if (width == 0 || isReserveScale)
-                Width = Textures[0].Width;
+                OriginalWidth = Textures[0].Width;
             else
-                Width = width;
+                OriginalWidth = width;
 
             if (height == 0 || isReserveScale)
-                Height = Textures[0].Height;
+                OriginalHeight = Textures[0].Height;
             else
-                Height = height;
+                OriginalHeight = height;
 
             if (isReserveScale)
             {
-                scale.X = (float)width / Width;
-                scale.Y = (float)height / Height;                
+                scale.X = (float)width / OriginalWidth;
+                scale.Y = (float)height / OriginalHeight;
             }
 
-            presentedWidth = Width * Scale.X;
-            presentedHeight = Height * Scale.Y;
+            Width = width;
+            Height = height;
 
-        }       
+        }
+
+        public void ReloadTexture(List<Texture2D> textures)
+        {
+            Textures = textures;
+        }
 
         private List<Texture2D> _Textures;
 
@@ -145,29 +197,32 @@ namespace InvasionWar.GameEntities.Visible
         }
 
         private Vector2 CurrentVelocity = new Vector2(0, 0);
-        
-        private int _Width;
 
-        public int Width
+        private float _Width;
+
+        public float Width
         {
             get { return _Width; }
             set { _Width = value; }
         }
-        private int _Height;
+        private float _Height;
 
-        public int Height
+        public float Height
         {
             get { return _Height; }
             set { _Height = value; }
         }
 
-        private float presentedWidth, presentedHeight;
-        public float PresentedWidth {
-            get {return presentedWidth;}
-        }
-        public float PresentedHeight
+        private float originalWidth, originalHeight;
+        public float OriginalWidth
         {
-            get { return presentedHeight; }
+            get { return originalWidth; }
+            set { originalWidth = value; }
+        }
+        public float OriginalHeight
+        {
+            get { return originalHeight; }
+            set { originalHeight = value; }
         }
 
         public float _Depth = 1;
@@ -207,6 +262,24 @@ namespace InvasionWar.GameEntities.Visible
             else return 1;
         }
 
+        public void SetPosition(Vector2 position)
+        {
+            Left = position.X;
+            Top = position.Y;
+        }
+
+        public void SetSize(Vector2 size)
+        {
+            var deltaX = size.X - Width;
+            var deltaY = size.Y - Height;
+
+            Left -= deltaX / 2.0f;
+            Top -= deltaY / 2.0f;
+
+            Width = size.X; Height = size.Y;
+
+        }
+
         public override void Update(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -230,42 +303,16 @@ namespace InvasionWar.GameEntities.Visible
                     d2 *= -1;
             }
 
-            if (transitionTask != null)
-            {
-                if (transitionTask.currentTime == 0)
-                {
-                    SetVelocity((transitionTask.toPosition.X - Left) / transitionTask.time, (transitionTask.toPosition.Y - Top) / transitionTask.time);                    
-                }
-                transitionTask.currentTime += deltaTime;
-                float signX = Sign(CurrentVelocity.X), signY = Sign(CurrentVelocity.Y);
-                if (this.Left * signX >= transitionTask.toPosition.X && this.Top * signY >= transitionTask.toPosition.Y * signY)
-                {
-                    this.Left = transitionTask.toPosition.X;
-                    this.Top = transitionTask.toPosition.Y;
-                    transitionTask.callback(this);
-                    transitionTask = null;
-                } 
-            }
-
             Left += CurrentVelocity.X * deltaTime;
             Top += CurrentVelocity.Y * deltaTime;
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            if (State==0)
-                spriteBatch.Draw(
-                _Textures[_iTexture], new Vector2(_Left, _Top),
-                new Rectangle(0, 0, _Width, _Height), 
-                Color.White, 0, Vector2.Zero, Scale, SpriteEffects.None, _Depth);
-            else
-            {
-                spriteBatch.Draw(
-                _Textures[_iTexture], new Rectangle((int)(_Left-d1), (int)(_Top-d1), (int)(PresentedWidth+2*d1), (int)(PresentedHeight+2*d1)),
-                new Rectangle(0, 0, _Width, _Height),
-                Color.Yellow, 0, Vector2.Zero, SpriteEffects.None, _Depth);
-
-            }
+            spriteBatch.Draw(
+            _Textures[_iTexture], new Rectangle((int)(_Left), (int)(_Top), (int)(Width), (int)(Height)),
+            new Rectangle(0, 0, (int)OriginalWidth, (int)OriginalHeight),
+            overlay, 0, Vector2.Zero, SpriteEffects.None, _Depth);
         }
 
         private int _State = 0;
@@ -278,12 +325,18 @@ namespace InvasionWar.GameEntities.Visible
 
         public bool InMousePosition(Vector2 MousePos)
         {
-            float x = MousePos.X, y = MousePos.Y;
-
-            if (x >= Left && x < Left + PresentedWidth
-                && y >= Top && y < Top + PresentedHeight)
-                return true;
-            return false;
+            if (Collider == null || Collider.vertices.Count < 3)
+            {
+                float x = MousePos.X, y = MousePos.Y;
+                if (x >= Left && x < Left + Width
+                    && y >= Top && y < Top + Height)
+                    return true;
+                return false;
+            }
+            else
+            {
+                return Collider.Inside(Vector2.Subtract(MousePos, new Vector2(Left, Top)));
+            }
         }
 
         public void SendMouseMove()
@@ -310,9 +363,12 @@ namespace InvasionWar.GameEntities.Visible
                 OnMouseUp(this);
         }
 
-        public void AddEventHandler(ref Del a, Del b) {
-            if (a == null) a = b;
-            else a += b;
+        public void SendMouseLeave()
+        {
+            if (OnMouseLeave != null)
+            {
+                OnMouseLeave(this);
+            }
         }
     }
 }
