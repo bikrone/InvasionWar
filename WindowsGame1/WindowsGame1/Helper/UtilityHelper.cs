@@ -61,5 +61,33 @@ namespace InvasionWar.Helper
         {
             return new Vector2(a.X * b.X, a.Y * b.Y);
         }
+
+        public static Vector2 CalculateSign(Vector2 from, Vector2 to)
+        {
+            Vector2 subtract = Vector2.Subtract(to, from);
+            subtract.X = Sign(subtract.X);
+            subtract.Y = Sign(subtract.Y);
+            return subtract;
+        }
+
+        public static Vector4 CalculateSign(Vector4 from, Vector4 to)
+        {
+            Vector4 subtract = Vector4.Subtract(to, from);
+            subtract.X = Sign(subtract.X);
+            subtract.Y = Sign(subtract.Y);
+            subtract.Z = Sign(subtract.Z);
+            subtract.W = Sign(subtract.W);
+            return subtract;
+        }
+
+        public static Vector2 VectorAbs(Vector2 a)
+        {
+            return new Vector2(Math.Abs(a.X), Math.Abs(a.Y));
+        }
+
+        public static Vector4 VectorAbs(Vector4 a)
+        {
+            return new Vector4(Math.Abs(a.X), Math.Abs(a.Y), Math.Abs(a.Z), Math.Abs(a.W));
+        }
     }
 }

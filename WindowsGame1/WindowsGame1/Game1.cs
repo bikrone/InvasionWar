@@ -15,6 +15,7 @@ using System.Timers;
 using InvasionWar.Effects;
 using InvasionWar.Effects.Animations;
 using InvasionWar.Styles;
+using InvasionWar.GameEntities.Invisible.Effects.GraphFunctions;
 
 namespace InvasionWar
 {
@@ -327,7 +328,10 @@ namespace InvasionWar
             mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, TextBoxRoom, time, new Vector2(TextBoxRoom.Left, TextBoxRoom.Top - distance), false));
             mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, TextBoxName, time, new Vector2(TextBoxName.Left, TextBoxName.Top - distance), false));
 
-            mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, btnPlay, time, new Vector2(btnPlay.Left, btnPlay.Top + distance), false));
+            Animation anim = new TranslationAnimation(mainStoryboard, btnPlay, time, new Vector2(btnPlay.Left, btnPlay.Top + distance), false);
+            anim.SetGraphFunction(new LinearGraphFunction());
+            mainStoryboard.AddAnimation(anim);
+            btnPlay.IsEnable = false;
 
             mainStoryboard.Start();
          

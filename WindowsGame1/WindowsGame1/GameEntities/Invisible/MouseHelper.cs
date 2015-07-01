@@ -90,9 +90,15 @@ namespace InvasionWar.GameEntities.Invisible
                 {
                     if (observer.InMousePosition(worldPositionOfMouse))
                     {
-                        if (IsLeftButtonUp()) observer.SendMouseMove();
+                        if (IsLeftButtonUp())
+                        {
+                            observer.SendMouseMove();
+                        }
                         if (IsLeftButtonDown()) observer.SendMouseDown();
-                        if (IsLeftButtonReleased()) observer.SendMouseUp();
+                        if (IsLeftButtonReleased())
+                        {
+                            observer.SendMouseUp();
+                        }
                         if (IsLeftButtonPressed()) observer.SendMouseClick();
                     }
                     else

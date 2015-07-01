@@ -5,12 +5,12 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using InvasionWar.GameEntities.Visible;
 using InvasionWar.Helper;
+using InvasionWar.GameEntities.Invisible.Effects.GraphFunctions;
 
 namespace InvasionWar.Effects.Animations
 {
     public class TranslationAnimation : Animation
-    {
-        
+    {        
         public Vector2 toPosition;
         public Vector2 fromPosition;
 
@@ -22,11 +22,21 @@ namespace InvasionWar.Effects.Animations
 
         private Vector2 Sign = new Vector2(1,1);
 
+        private Vector2 totalDistance;
+
         public override void Update(GameTime gameTime)
         {
             if (!isStarted) return;
+            int i=0;
+           
+            // UtilityHelper.ApplyVelocity(ref currentPosition, UtilityHelper.MultiplyVector(velocity, Sign), gameTime);
+            Vector2 deltaDistance = graphFunction.ApplyVelocity(CurrentTime, CurrentTime.Add(gameTime.ElapsedGameTime), Duration, totalDistance);
 
-            UtilityHelper.ApplyVelocity(ref currentPosition, UtilityHelper.MultiplyVector(velocity, Sign), gameTime);
+            CurrentTime = CurrentTime.Add(gameTime.ElapsedGameTime);
+            // if (CurrentTime > Duration) CurrentTime = TimeSpan.Zero;
+            deltaDistance = Vector2.Multiply(deltaDistance, Sign);
+
+            currentPosition = Vector2.Add(currentPosition, deltaDistance);
 
             currentPosition.X = MathHelper.Clamp(currentPosition.X, Math.Min(fromPosition.X, toPosition.X), Math.Max(fromPosition.X, toPosition.X));            
             currentPosition.Y = MathHelper.Clamp(currentPosition.Y, Math.Min(fromPosition.Y, toPosition.Y), Math.Max(fromPosition.Y, toPosition.Y));
@@ -35,14 +45,22 @@ namespace InvasionWar.Effects.Animations
 
             if (isLoop)
             {
+                int completed = 0;
                 if (currentPosition.X == fromPosition.X || currentPosition.X == toPosition.X)
                 {
                     Sign.X *= -1;
+                    completed++;
                 }
                 if (currentPosition.Y == fromPosition.Y || currentPosition.Y == toPosition.Y)
                 {
                     Sign.Y *= -1;
+                    completed++;
                 }
+                if (completed == 2)
+                {
+                    CurrentTime = TimeSpan.Zero;
+                }
+                
             }
             else
             {
@@ -71,7 +89,8 @@ namespace InvasionWar.Effects.Animations
         }
         public override void Start()
         {
-            isStarted = true;
+            isStarted = true;            
+            
             this.originalPosition = new Vector2(sprite.Left, sprite.Top);
 
             if (duration == 0)
@@ -83,19 +102,23 @@ namespace InvasionWar.Effects.Animations
 
             if (isFromNull) fromPosition = this.originalPosition;
 
-            velocity = UtilityHelper.CalculateVelocity(this.fromPosition, this.toPosition, duration);
+            Sign = UtilityHelper.CalculateSign(this.fromPosition, this.toPosition);
 
             currentPosition = this.fromPosition;
 
             if (isAnimatedFromOrigin)
             {
                 currentPosition = this.originalPosition;
-                Sign.X = -1; Sign.Y = -1;
+                Sign = UtilityHelper.CalculateSign(currentPosition, this.fromPosition);
             }
             else
             {
                 sprite.SetPosition(this.currentPosition);
-            }                        
+            }
+
+            CurrentTime = TimeSpan.Zero;
+            Duration = TimeSpan.FromSeconds(duration);
+            totalDistance = UtilityHelper.VectorAbs(Vector2.Subtract(toPosition, fromPosition));
         }
 
         public TranslationAnimation(Storyboard storyboard, My2DSprite sprite, float duration, Vector2 toPosition, bool isReserveProperty = true, Vector2? fromPosition = null, bool isAnimatedFromOrigin = false, bool isLoop = false, bool isInfinite = false)

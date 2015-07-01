@@ -62,6 +62,11 @@ namespace InvasionWar.Effects
 
         public void SendCompleted()
         {
+            if (this.animations.Count == 7)
+            {
+                completedCount++;
+                completedCount--;
+            }
             completedCount++;
             if (completedCount >= this.animations.Count)
             {

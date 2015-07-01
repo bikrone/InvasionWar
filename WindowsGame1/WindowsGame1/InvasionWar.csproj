@@ -111,6 +111,9 @@
     <Compile Include="GameEntities\Invisible\Effects\Animations\ColorAnimation.cs" />
     <Compile Include="GameEntities\Invisible\Effects\Animations\ScaleAnimation.cs" />
     <Compile Include="GameEntities\Invisible\Effects\Animations\TranslationAnimation.cs" />
+    <Compile Include="GameEntities\Invisible\Effects\GraphFunctions\ConstantGraphFunction.cs" />
+    <Compile Include="GameEntities\Invisible\Effects\GraphFunctions\GraphFunction.cs" />
+    <Compile Include="GameEntities\Invisible\Effects\GraphFunctions\LinearGraphFunction.cs" />
     <Compile Include="GameEntities\Invisible\Effects\Storyboard.cs" />
     <Compile Include="GameEntities\Invisible\Camera.cs" />
     <Compile Include="GameEntities\GameEntity.cs" />

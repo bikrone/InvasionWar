@@ -1,4 +1,5 @@
-﻿using InvasionWar.GameEntities.Visible;
+﻿using InvasionWar.GameEntities.Invisible.Effects.GraphFunctions;
+using InvasionWar.GameEntities.Visible;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,16 @@ namespace InvasionWar.Effects
         public bool isReserveProperty = true;        
 
         protected bool isStarted = false;
+
+        public TimeSpan Duration;
+        public TimeSpan CurrentTime;
+
+        public GraphFunction graphFunction = new ConstantGraphFunction();
+
+        public void SetGraphFunction(GraphFunction function)
+        {
+            this.graphFunction = function;
+        }
 
         public virtual void Start()
         {
