@@ -33,15 +33,8 @@ namespace InvasionWar.GameEntities.Visible
             this.team = team;
             this.i = i;
             this.j = j;
-
-            this.sprite.OnMouseUp += OnMouseUp;
-            Global.gMouseHelper.Register(this.sprite);
-        }
-
-        public void OnMouseUp(object sender)
-        {
-            Gem.map.OnMouseClick(i, j);
-        }
+       
+        }             
 
         public void ChangeTeam()
         {

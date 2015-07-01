@@ -20,13 +20,14 @@ namespace InvasionWar.GameEntities.Visible
 
         public enum MapState
         {
-            RedTurn, BlueTurn
+            RedTurn, BlueTurn, Transitioning, Stopped
         }
 
         public MapState State = MapState.RedTurn;
 
         public class Tile
         {
+            public static HexagonMap map;
             public My2DSprite sprite;
             public int i;
             public int j;
@@ -34,18 +35,22 @@ namespace InvasionWar.GameEntities.Visible
             private static string[] CellImages = { "hexa_selected", "hexa_near", "hexa_far", "Hexa" };
 
             public enum CellState { Selected, Near, Far, None }
-            public CellState State;
-
-            public Tile()
-            {
-                State = CellState.None;
-            }
+            public CellState State;         
 
             public Tile(My2DSprite sprite, int i, int j)
             {
+                State = CellState.None;        
                 this.sprite = sprite;
                 this.i = i;
                 this.j = j;
+                this.sprite.OnMouseUp += OnMouseUp;
+                Global.gMouseHelper.Register(this.sprite);
+            }
+
+           
+            public void OnMouseUp(object sender)
+            {
+                Tile.map.OnMouseClick(i, j);
             }
 
             public void ChangeState(CellState state)
@@ -114,6 +119,7 @@ namespace InvasionWar.GameEntities.Visible
             AddGem(12, 8, Gem.Team.Red);
 
             Gem.map = this;
+            Tile.map = this;
 
             //SelectCell(4, 0);
         }
@@ -125,7 +131,7 @@ namespace InvasionWar.GameEntities.Visible
             gems.Add(gem);
         }
 
-        public void ClearAllCellState()
+        private void ClearAllCellState()
         {
             foreach (var tile in tiles)
             {
@@ -133,7 +139,7 @@ namespace InvasionWar.GameEntities.Visible
             }
         }
 
-        public void SetCellState(int i, int j, Tile.CellState state)
+        private void SetCellState(int i, int j, Tile.CellState state)
         {
             if (i < 0 || i >= height * 2 || j < 0 || j > height) return;
             if (Tiles[i, j] == null) return;
@@ -141,7 +147,7 @@ namespace InvasionWar.GameEntities.Visible
                 Tiles[i, j].ChangeState(state);
         }
 
-        public void MarkNearAs(int i, int j, Tile.CellState state)
+        private void MarkNearAs(int i, int j, Tile.CellState state)
         {            
             SetCellState(i - 1, j + 1, state);
             SetCellState(i + 1, j + 1, state);
@@ -163,6 +169,7 @@ namespace InvasionWar.GameEntities.Visible
 
         public void SelectCell(int i, int j)
         {
+            if (State == MapState.Transitioning || State == MapState.Stopped) return;
             if (Tiles[i, j].State == Tile.CellState.None)
             {                
                 if (Gems[i, j] == null) return;
@@ -214,12 +221,13 @@ namespace InvasionWar.GameEntities.Visible
             {
                 for (int i = startRow; i <= lastRow; i += 2)
                 {
-                    Tiles[i, j] = new Tile();
+                    
                     float left = this.Left + j * TileWidth;
                     float top = this.Top + i * TileHeight;
-                    Tiles[i, j].sprite = StaticSprite.CreateSprite(left, top, new Vector2(1, 1), @"Sprite\GameUI\" + strTextures[0], 0.5f, (int)((float)TileWidth * 4 / 3), 2 * TileHeight);
-                    Tiles[i, j].i = i;
-                    Tiles[i, j].j = j;
+                    var sprite = StaticSprite.CreateSprite(left, top, new Vector2(1, 1), @"Sprite\GameUI\" + strTextures[0], 0.5f, (int)((float)TileWidth * 4 / 3), 2 * TileHeight);
+
+                    Tiles[i, j] = new Tile(sprite, i, j);
+
                     AddHexagonCollider(Tiles[i, j].sprite);
                     CellStyle.Assign(Tiles[i,j].sprite);
                     tiles.Add(Tiles[i,j]);
