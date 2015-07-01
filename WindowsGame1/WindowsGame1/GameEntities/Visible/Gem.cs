@@ -14,14 +14,15 @@ namespace InvasionWar.GameEntities.Visible
         public My2DSprite sprite;
         public int i;
         public int j;
-
+       
         public enum Team { Red, Blue }
         public Team team;
 
-        public Gem(Team team, Vector2 visualPosition, int i, int j)
+        public Gem(Team team, int i, int j)
         {
             int width = (int)(Gem.Size.X * Global.thisGame.ScreenScaleFactor.X);
             int height = (int)(Gem.Size.Y * Global.thisGame.ScreenScaleFactor.Y);
+            var visualPosition = Gem.map.GetGemVisualPosition(i, j);
             if (team == Team.Red)
             {
                 sprite = StaticSprite.CreateSprite(visualPosition.X, visualPosition.Y, new Vector2(1,1), SpritePath[0], 0.1f, width, height);
@@ -34,7 +35,26 @@ namespace InvasionWar.GameEntities.Visible
             this.i = i;
             this.j = j;
        
-        }             
+        }
+
+        public Gem(Gem gem2)
+        {
+            this.team = gem2.team;
+            this.i = gem2.i;
+            this.j = gem2.j;
+            var visualPosition = Gem.map.GetGemVisualPosition(i, j);
+            int width = (int)(Gem.Size.X * Global.thisGame.ScreenScaleFactor.X);
+            int height = (int)(Gem.Size.Y * Global.thisGame.ScreenScaleFactor.Y);
+            if (team == Team.Red)
+            {
+                sprite = StaticSprite.CreateSprite(visualPosition.X, visualPosition.Y, new Vector2(1, 1), SpritePath[0], 0.1f, width, height);
+            }
+            else
+            {
+                sprite = StaticSprite.CreateSprite(visualPosition.X, visualPosition.Y, new Vector2(1, 1), SpritePath[1], 0.1f, width, height);
+            }
+            
+        }
 
         public void ChangeTeam()
         {

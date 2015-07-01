@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using InvasionWar.GameEntities.Visible;
 using InvasionWar.Helper;
+using InvasionWar.GameEntities.Invisible.Effects.GraphFunctions;
 
 namespace InvasionWar.Effects.Animations
 {
@@ -23,11 +24,19 @@ namespace InvasionWar.Effects.Animations
 
         private Vector2 Sign = new Vector2(1, 1);
 
+        private Vector2 totalDistance;
+
         public override void Update(GameTime gameTime)
         {
             if (!isStarted) return;
 
-            UtilityHelper.ApplyVelocity(ref currentSize, UtilityHelper.MultiplyVector(velocity, Sign), gameTime);
+            // UtilityHelper.ApplyVelocity(ref currentSize, UtilityHelper.MultiplyVector(velocity, Sign), gameTime);
+            Vector2 deltaDistance = graphFunction.ApplyVelocity(CurrentTime, CurrentTime.Add(gameTime.ElapsedGameTime), Duration, totalDistance);
+
+            CurrentTime = CurrentTime.Add(gameTime.ElapsedGameTime);            
+            deltaDistance = Vector2.Multiply(deltaDistance, Sign);
+
+            currentSize = Vector2.Add(currentSize, deltaDistance);
 
             currentSize.X = MathHelper.Clamp(currentSize.X, Math.Min(fromSize.X, toSize.X), Math.Max(fromSize.X, toSize.X));
             currentSize.Y = MathHelper.Clamp(currentSize.Y, Math.Min(fromSize.Y, toSize.Y), Math.Max(fromSize.Y, toSize.Y));
@@ -36,8 +45,21 @@ namespace InvasionWar.Effects.Animations
 
             if (isLoop)
             {
-                if (currentSize.X == fromSize.X || currentSize.X == toSize.X) Sign.X *= -1;
-                if (currentSize.Y == fromSize.Y || currentSize.Y == toSize.Y) Sign.Y *= -1;
+                int completed = 0;
+                if (currentSize.X == fromSize.X || currentSize.X == toSize.X)
+                {
+                    Sign.X *= -1;
+                    completed++;
+                }
+                if (currentSize.Y == fromSize.Y || currentSize.Y == toSize.Y)
+                {
+                    Sign.Y *= -1;
+                    completed++;
+                }
+                if (completed == 2)
+                {
+              //      CurrentTime = TimeSpan.Zero;
+                }
             }
             else
             {
@@ -71,7 +93,9 @@ namespace InvasionWar.Effects.Animations
             if (isFromNull) fromScale = new Vector2(1, 1);
 
             fromSize = UtilityHelper.MultiplyVector(this.originalSize, this.fromScale);
-            toSize = UtilityHelper.MultiplyVector(this.originalSize, this.toScale);   
+            fromSize.X = (int)fromSize.X; fromSize.Y = (int)fromSize.Y;
+            toSize = UtilityHelper.MultiplyVector(this.originalSize, this.toScale);
+            toSize.X = (int)toSize.X; toSize.Y = (int)toSize.Y;
 
             if (duration == 0)
             {
@@ -82,17 +106,26 @@ namespace InvasionWar.Effects.Animations
 
             velocity = UtilityHelper.CalculateVelocity(this.fromSize, this.toSize, duration);
 
+            Sign = UtilityHelper.CalculateSign(this.fromSize, this.toSize);
+
             currentSize = this.fromSize;
 
             if (isAnimatedFromOrigin)
             {
-                Sign.X = -1; Sign.Y = -1;
                 currentSize = this.originalSize;
+                Sign = UtilityHelper.CalculateSign(currentSize, this.fromSize);
             }
             else
             {
                 sprite.SetSize(this.currentSize);
             }
+
+            CurrentTime = TimeSpan.Zero;
+            Duration = TimeSpan.FromSeconds(duration);
+            totalDistance = UtilityHelper.VectorAbs(Vector2.Subtract(toSize, fromSize));
+
+            if (graphFunction == null)
+                graphFunction = new ConstantGraphFunction(duration);
         }
 
 

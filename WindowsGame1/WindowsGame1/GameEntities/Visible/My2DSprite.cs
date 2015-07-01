@@ -270,13 +270,13 @@ namespace InvasionWar.GameEntities.Visible
 
         public void SetSize(Vector2 size)
         {
-            var deltaX = size.X - Width;
-            var deltaY = size.Y - Height;
+            var deltaX = (size.X - Width)/2.0f;
+            var deltaY = (size.Y - Height)/2.0f;
 
-            Left -= deltaX / 2.0f;
-            Top -= deltaY / 2.0f;
+            Left -= deltaX;
+            Top -= deltaY;
 
-            Width = size.X; Height = size.Y;
+            Width += deltaX * 2; Height += deltaY * 2;
 
         }
 

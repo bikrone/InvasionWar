@@ -26,10 +26,13 @@ namespace InvasionWar
             gKeyboardHelper.Update(gameTime);
             gMainCamera.Update(gameTime);
             List<Storyboard> completed = new List<Storyboard>();
-            foreach (var storyboard in storyboards)
+            int n = storyboards.Count;
+            for (int i = 0; i < n; i++)
             {
+                var storyboard = storyboards[i];
                 if (storyboard.isStarted) storyboard.Update(gameTime);
                 if (storyboard.isCompleted) completed.Add(storyboard);
+                n = storyboards.Count;
             }
             foreach (var storyboard in completed)
             {

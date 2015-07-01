@@ -7,7 +7,7 @@ namespace InvasionWar.GameEntities.Invisible.Effects.GraphFunctions
 {
     public class LinearGraphFunction : GraphFunction
     {
-        public float antiDerivative(float x)
+        public double antiDerivative(double x)
         {
             return x * x / 2.0f;
         }

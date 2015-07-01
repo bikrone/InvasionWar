@@ -6,21 +6,21 @@ using System.Text;
 
 namespace InvasionWar.GameEntities.Invisible.Effects.GraphFunctions
 {
-    public delegate float AntiDerivativeFunction(float x);
+    public delegate double AntiDerivativeFunction(double x);
 
     public class PartialGraph
     {
-        public float from;
-        public float to;
+        public double from;
+        public double to;
 
         public AntiDerivativeFunction antiDerivative;
 
-        public PartialGraph(float from, float to, AntiDerivativeFunction antiDerivative)
+        public PartialGraph(double from, double to, AntiDerivativeFunction antiDerivative)
         {
             this.from = from; this.to = to; this.antiDerivative = antiDerivative;
         }
 
-        public float Integral(float l, float r)
+        public double Integral(double l, double r)
         {
             return antiDerivative(r) - antiDerivative(l);
         }
@@ -29,9 +29,9 @@ namespace InvasionWar.GameEntities.Invisible.Effects.GraphFunctions
     // Graph function line Constant, Linear, Spline...    
     public class GraphFunction
     {
-        private float Left, Right;
+        private double Left, Right;
         public List<PartialGraph> partials = new List<PartialGraph>();
-        public float Area;
+        public double Area;
 
         public void AddSegment(PartialGraph partial)
         {
@@ -50,9 +50,9 @@ namespace InvasionWar.GameEntities.Invisible.Effects.GraphFunctions
             Area = Integral(Left, Right);
         }
 
-        public float Integral(float l, float r)
+        public double Integral(double l, double r)
         {
-            float ll, rr, integral=0;
+            double ll, rr, integral=0;
             
             foreach (var partial in partials)
             {
@@ -76,42 +76,56 @@ namespace InvasionWar.GameEntities.Invisible.Effects.GraphFunctions
         }
 
 
-        public Vector2 ApplyVelocity(TimeSpan from, TimeSpan to, TimeSpan totalDuration, Vector2 totalDistance)
+        public virtual Vector2 ApplyVelocity(TimeSpan from, TimeSpan to, TimeSpan totalDuration, Vector2 totalDistance)
         {
             if (from > totalDuration)
             {
-                from = from.Subtract(totalDuration);
-                to = to.Subtract(totalDuration);
+                while (from > totalDuration)
+                {
+                    from = from.Subtract(totalDuration);
+                    to = to.Subtract(totalDuration);
+                }
             }
             else
             {
                 if (to > totalDuration) to = totalDuration;
             }
             
-            float scaleTime = ((float)totalDuration.TotalSeconds / (Right - Left));
-            Vector2 scaleDistance = Vector2.Divide(totalDistance, Area);            
+            double scaleTime = ((double)totalDuration.TotalSeconds / (Right - Left));
+            Vector2 scaleDistance = Vector2.Divide(totalDistance, (float)Area);            
             
-            float l = Left+(float)from.TotalSeconds / scaleTime;
-            float r = Left+(float)to.TotalSeconds / scaleTime;
+            double l = Left+(double)from.TotalSeconds / scaleTime;
+            double r = Left+(double)to.TotalSeconds / scaleTime;
 
-            float distance = Integral(l, r);
-            Vector2 deltaDistance = Vector2.Multiply(scaleDistance, distance);
+            double distance = Integral(l, r);
+            Vector2 deltaDistance = Vector2.Multiply(scaleDistance, (float)distance);
 
             return deltaDistance;
         }
 
 
-        public Vector4 ApplyVelocity(TimeSpan from, TimeSpan to, TimeSpan totalDuration, Vector4 totalDistance)
+        public virtual Vector4 ApplyVelocity(TimeSpan from, TimeSpan to, TimeSpan totalDuration, Vector4 totalDistance)
         {
+            if (from > totalDuration)
+            {
+                while (from > totalDuration)
+                {
+                    from = from.Subtract(totalDuration);
+                    to = to.Subtract(totalDuration);
+                }
+            }
+            else
+            {
+                if (to > totalDuration) to = totalDuration;
+            }
+            double scaleTime = ((double)totalDuration.TotalSeconds / (Right - Left));
+            Vector4 scaleDistance = Vector4.Divide(totalDistance, (float)Area);
 
-            float scaleTime = ((float)totalDuration.TotalSeconds / (Right - Left));
-            Vector4 scaleDistance = Vector4.Divide(totalDistance, Area);
+            double l = (double)from.TotalSeconds / scaleTime;
+            double r = (double)to.TotalSeconds / scaleTime;
 
-            float l = (float)from.TotalSeconds / scaleTime;
-            float r = (float)to.TotalSeconds / scaleTime;
-
-            float distance = Integral(l, r);
-            Vector4 deltaDistance = Vector4.Multiply(scaleDistance, distance);
+            double distance = Integral(l, r);
+            Vector4 deltaDistance = Vector4.Multiply(scaleDistance, (float)distance);
 
             return deltaDistance;
         }

@@ -22,7 +22,7 @@ namespace InvasionWar.Effects
         public TimeSpan Duration;
         public TimeSpan CurrentTime;
 
-        public GraphFunction graphFunction = new ConstantGraphFunction();
+        public GraphFunction graphFunction;
 
         public void SetGraphFunction(GraphFunction function)
         {

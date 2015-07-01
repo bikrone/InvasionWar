@@ -26,9 +26,7 @@ namespace InvasionWar.Effects.Animations
 
         public override void Update(GameTime gameTime)
         {
-            if (!isStarted) return;
-            int i=0;
-           
+            if (!isStarted) return;        
             // UtilityHelper.ApplyVelocity(ref currentPosition, UtilityHelper.MultiplyVector(velocity, Sign), gameTime);
             Vector2 deltaDistance = graphFunction.ApplyVelocity(CurrentTime, CurrentTime.Add(gameTime.ElapsedGameTime), Duration, totalDistance);
 
@@ -119,6 +117,9 @@ namespace InvasionWar.Effects.Animations
             CurrentTime = TimeSpan.Zero;
             Duration = TimeSpan.FromSeconds(duration);
             totalDistance = UtilityHelper.VectorAbs(Vector2.Subtract(toPosition, fromPosition));
+
+            if (graphFunction ==null)
+                graphFunction = new ConstantGraphFunction(duration);
         }
 
         public TranslationAnimation(Storyboard storyboard, My2DSprite sprite, float duration, Vector2 toPosition, bool isReserveProperty = true, Vector2? fromPosition = null, bool isAnimatedFromOrigin = false, bool isLoop = false, bool isInfinite = false)

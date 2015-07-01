@@ -275,7 +275,11 @@ namespace InvasionWar
             Global.UpdateAll(gameTime);
 
             UpdateSprites(gameTime);
-                       
+
+            if (hexMap != null)
+            {
+                hexMap.Update(gameTime);
+            }
 
             base.Update(gameTime);
         }
@@ -342,7 +346,7 @@ namespace InvasionWar
             
         }
 
-        private void TransitionCompleted(object sender)
+        private void TransitionCompleted(object sender, object argument)
         {
             CurrentGameState = NextGameState;
             LoadScene();

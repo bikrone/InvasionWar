@@ -10,12 +10,14 @@ namespace InvasionWar.Effects
 {
     public class Storyboard : InvisibleGameEntity
     {
-        public delegate void Callback(object sender);        
+        public delegate void Callback(object sender, object argument);        
 
         public bool isStarted = false;
         public bool isCompleted = false;
 
         private int completedCount = 0;
+
+        public object argument = null;
 
         public void Start()
         {
@@ -83,7 +85,10 @@ namespace InvasionWar.Effects
             {                
                 animation.Stop();
             }
-            if (OnCompleted != null) OnCompleted(this);
+            if (OnCompleted != null)
+            {
+                OnCompleted(this, argument);
+            }
         }
 
         public override void Update(GameTime gameTime)

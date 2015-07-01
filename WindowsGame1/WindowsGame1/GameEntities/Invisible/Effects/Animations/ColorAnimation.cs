@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using InvasionWar.GameEntities.Visible;
 using InvasionWar.Helper;
+using InvasionWar.GameEntities.Invisible.Effects.GraphFunctions;
 
 namespace InvasionWar.Effects.Animations
 {
@@ -21,11 +22,20 @@ namespace InvasionWar.Effects.Animations
 
         private Vector4 Sign = new Vector4(1, 1, 1, 1);
 
+        Vector4 totalDistance;
+
         public override void Update(GameTime gameTime)
         {
             if (!isStarted) return;
 
-            UtilityHelper.ApplyVelocity(ref currentColor, Vector4.Multiply(velocity, Sign), gameTime);
+            // UtilityHelper.ApplyVelocity(ref currentColor, Vector4.Multiply(velocity, Sign), gameTime);            
+            Vector4 deltaDistance = graphFunction.ApplyVelocity(CurrentTime, CurrentTime.Add(gameTime.ElapsedGameTime), Duration, totalDistance);
+
+            CurrentTime = CurrentTime.Add(gameTime.ElapsedGameTime);
+            // if (CurrentTime > Duration) CurrentTime = TimeSpan.Zero;
+            deltaDistance = Vector4.Multiply(deltaDistance, Sign);
+
+            currentColor = Vector4.Add(currentColor, deltaDistance);
 
             currentColor.X = MathHelper.Clamp(currentColor.X, Math.Min(fromColor.X, toColor.X), Math.Max(fromColor.X, toColor.X));
             currentColor.Y = MathHelper.Clamp(currentColor.Y, Math.Min(fromColor.Y, toColor.Y), Math.Max(fromColor.Y, toColor.Y));
@@ -36,21 +46,31 @@ namespace InvasionWar.Effects.Animations
 
             if (isLoop)
             {
+                int completed = 0;
                 if (currentColor.X == fromColor.X || currentColor.X == toColor.X)
                 {
                     Sign.X *= -1;
+                    completed++;
                 }
                 if (currentColor.Y == fromColor.Y || currentColor.Y == toColor.Y)
                 {
                     Sign.Y *= -1;
+                    completed++;
                 }
                 if (currentColor.Z == fromColor.Z || currentColor.Z == toColor.Z)
                 {
                     Sign.Z *= -1;
+                    completed++;
                 }
                 if (currentColor.W == fromColor.W || currentColor.W == toColor.W)
                 {
                     Sign.W *= -1;
+                    completed++;
+                }
+
+                if (completed == 4)
+                {
+                    CurrentTime = TimeSpan.Zero;
                 }
             }
             else
@@ -75,19 +95,27 @@ namespace InvasionWar.Effects.Animations
             this.originalColor = sprite.GetOverlay();
             if (isFromNull) this.fromColor = this.originalColor;    
 
-            velocity = UtilityHelper.CalculateVelocity(this.fromColor, this.toColor, duration);
+            // velocity = UtilityHelper.CalculateVelocity(this.fromColor, this.toColor, duration);
+            Sign = UtilityHelper.CalculateSign(this.fromColor, this.toColor);
 
             currentColor = this.fromColor;
 
             if (isAnimatedFromOrigin)
             {
                 currentColor = this.originalColor;
-                Sign.X = -1; Sign.Y = -1;
+                Sign = UtilityHelper.CalculateSign(currentColor, this.fromColor);
             }
             else
             {
                 sprite.SetOverlay(this.currentColor);
             }
+
+            CurrentTime = TimeSpan.Zero;
+            Duration = TimeSpan.FromSeconds(duration);
+            totalDistance = UtilityHelper.VectorAbs(Vector4.Subtract(toColor, fromColor));
+
+            if (graphFunction == null)
+                graphFunction = new ConstantGraphFunction(duration);
         }
 
         public override void Stop()
