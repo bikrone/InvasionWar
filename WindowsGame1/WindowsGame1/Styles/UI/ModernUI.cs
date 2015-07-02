@@ -62,7 +62,10 @@ namespace InvasionWar.Styles.UI
             {
                 game.btnPlaySingle = StaticSprite.CreateSprite(394, 610, game.ScreenScaleFactor, @"Sprite/GameUI/Black_btnRound", 0.8f);                
                 game.btnPlaySingle.AddChildAtMid(StaticSprite.CreateSprite(0, 0, game.ScreenScaleFactor, @"Sprite/GameUI/Black_btnSinglePlay", 0.7f));
-                game.btnPlaySingle.OnMouseUp += TransitionToGame;
+                game.btnPlaySingle.OnMouseUp += (sender) =>
+                {
+                    TransitionToGame(StartGameSingle);
+                };
 
                 ModernButtonStyle.Assign(game.btnPlaySingle);
             }
@@ -71,7 +74,11 @@ namespace InvasionWar.Styles.UI
             {
                 game.btnPlayMulti = StaticSprite.CreateSprite(394, 554, game.ScreenScaleFactor, @"Sprite/GameUI/Black_btnRound", 0.8f);
                 game.btnPlayMulti.AddChildAtMid(StaticSprite.CreateSprite(0, 0, game.ScreenScaleFactor, @"Sprite/GameUI/Black_btnMultiPlay", 0.7f));
-                game.btnPlayMulti.OnMouseUp += TransitionToGame;
+                game.btnPlayMulti.OnMouseUp += (sender) => {
+                    if (String.IsNullOrEmpty(game.TextBoxName.GetText())) return;
+                    if (String.IsNullOrEmpty(game.TextBoxRoom.GetText())) return;
+                    TransitionToGame(StartGameMultiplayer);
+                };
 
                 ModernButtonStyle.Assign(game.btnPlayMulti);
             }
@@ -103,7 +110,7 @@ namespace InvasionWar.Styles.UI
                 var Red = StaticSprite.CreateSprite(0, 30, game.ScreenScaleFactor, @"Sprite/GameUI/Player1", 0.6f);
                 var Blue = StaticSprite.CreateSprite(0, 110, game.ScreenScaleFactor, @"Sprite/GameUI/Player2", 0.6f);
                 game.scoreBoard = new Scoreboard(Red, Blue, game.ScreenScaleFactor);
-                game.scoreBoard.Top = 280 * game.ScreenScaleFactor.Y;
+                game.scoreBoard.Top = 320 * game.ScreenScaleFactor.Y;
                 game.scoreBoard.Left = 90 * game.ScreenScaleFactor.X;
             }
 
@@ -134,13 +141,13 @@ namespace InvasionWar.Styles.UI
             base.LoadScene();
         }
 
-        private void TransitionToGame(object sender)
+        private void TransitionToGame(Storyboard.Callback callback)
         {
             if (game.CurrentGameState == Game1.GameState.Started) return;                       
 
             mainStoryboard.Stop();
             mainStoryboard.Clear();
-            mainStoryboard.OnCompleted += StartGame;
+            mainStoryboard.OnCompleted += (Storyboard.Callback)callback;
 
             float distance = 700;
             Vector2 scale = new Vector2(0.9f, 0.9f);
@@ -181,7 +188,7 @@ namespace InvasionWar.Styles.UI
 
         private void TransitionToMenu(object sender)
         {
-            if (game.CurrentGameState == Game1.GameState.NotStarted) return;
+            if (game.CurrentGameState == Game1.GameState.NotStarted) return;            
             game.ResetGame();
 
             mainStoryboard.Stop();
@@ -229,9 +236,14 @@ namespace InvasionWar.Styles.UI
             // game.ResetGame();
         }
 
-        private void StartGame(object sender, object argument)
+        private void StartGameSingle(object sender, object argument)
         {
-            game.StartGame();
+            game.StartGameSingle();
+        }
+
+        private void StartGameMultiplayer(object sender, object argument)
+        {
+            game.StartGameMultiplayer();
         }
 
     }

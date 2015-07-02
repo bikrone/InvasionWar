@@ -13,5 +13,7 @@ namespace InvasionWar
         public static float GemSelectedEffectDuration = 0.15f;
 
         public static string UIPath = @"Sprite\GameUI\";
+
+        public static string HexagonServer = "http://localhost:1234";
     }
 }

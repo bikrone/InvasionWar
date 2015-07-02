@@ -156,8 +156,8 @@ namespace InvasionWar.Styles.UI
         }
 
         private void StartGame(object sender, object argument)
-        {            
-            game.StartGame();
+        {                       
+            game.StartGameSingle();
         }
 
     }

@@ -17,6 +17,7 @@ using InvasionWar.Effects.Animations;
 using InvasionWar.Styles;
 using InvasionWar.GameEntities.Invisible.Effects.GraphFunctions;
 using InvasionWar.Styles.UI;
+using Quobject.SocketIoClientDotNet.Client;
 
 namespace InvasionWar
 {
@@ -31,10 +32,31 @@ namespace InvasionWar
             NotStarted, Started, Lost, Won
         }
 
+        public enum ConnectionState
+        {
+            NotConnected, RoomFull, DuplicateID, OtherDisconnected, Connected, Waiting
+        }
+
+        public enum TurnState
+        {
+            Ready, Waiting
+        }
+
+        public TurnState turnState = TurnState.Ready;
+
+        public ConnectionState connectionState = ConnectionState.NotConnected;
+
         public enum PlayerState
         {
             Red, Blue, Both
         }
+
+        public enum GameMode
+        {
+            Single, Multiplayer
+        }
+
+        public GameMode gameMode = GameMode.Single;
 
         Timer gameStateChanged = new Timer();        
 
@@ -50,7 +72,10 @@ namespace InvasionWar
         public Vector2 ScreenSize;
         public Vector2 ScreenScaleFactor;
 
-        public HexagonMap hexMap;        
+        public HexagonMap hexMap;
+
+        public Socket HexagonServer;
+        public bool ServerReady;
 
         public Game1()
         {
@@ -70,6 +95,60 @@ namespace InvasionWar
             Content.RootDirectory = "Content";
 
             Global.thisGame = this;
+            HexagonServer = IO.Socket(GameSettings.HexagonServer);
+            
+            HexagonServer.On(Socket.EVENT_CONNECT, () =>
+            {
+                ServerReady = true;
+            });
+
+            HexagonServer.On("sendMove", (data) =>
+            {
+                if (hexMap != null)
+                {
+                    int i,j;
+                    string[] d = ((string)data).Split(',');
+                    i = Convert.ToInt32(d[0]);
+                    j = Convert.ToInt32(d[1]);
+                    hexMap.SelectCell(i, j, true);
+                }
+            });
+
+            HexagonServer.On("registerResult", (data) =>
+            {
+                var result = Convert.ToInt32(data);
+                switch (result)
+                {
+                    case -1:
+                        connectionState = ConnectionState.DuplicateID;
+                        break;
+                    case 0:
+                        connectionState = ConnectionState.RoomFull;
+                        break;
+                    case 1:
+                        connectionState = ConnectionState.Connected;
+                        playerState = PlayerState.Blue;
+                        turnState = TurnState.Waiting;                        
+                        break;
+                    case 2:
+                        connectionState = ConnectionState.Waiting;
+                        playerState = PlayerState.Red;
+                        turnState = TurnState.Ready;                        
+                        break;
+                }                
+            });
+
+            HexagonServer.On("otherQuit", (data) =>
+            {
+                var username = (string)data;
+                connectionState = ConnectionState.OtherDisconnected;
+            });
+
+            HexagonServer.On("otherJoin", (data) =>
+            {
+                var username = (string)data;
+                connectionState = ConnectionState.Connected;
+            });
         }
 
         /// <summary>
@@ -193,8 +272,10 @@ namespace InvasionWar
             
         }
 
-        public void StartGame()
+        public void StartGameSingle()
         {
+            Global.UnfocusAllTextBox();
+            gameMode = GameMode.Single;
             CurrentGameState = GameState.Started;
             if (hexMap == null)
             {
@@ -206,9 +287,43 @@ namespace InvasionWar
             }
             hexMap.StartSingle();
         }
+
+        public void StartGameMultiplayer()
+        {
+            Global.UnfocusAllTextBox();
+            gameMode = GameMode.Multiplayer;
+            CurrentGameState = GameState.Started;
+            if (hexMap == null)
+            {
+                string[] textures = new string[3];
+                textures[0] = "Hexa";
+                textures[1] = "hexa_near";
+                textures[2] = "hexa_far";
+                hexMap = new HexagonMap((int)(375.0f * ScreenScaleFactor.X), (int)(110.0f * ScreenScaleFactor.Y), 9, 45, 26, textures);
+            }
+
+            var username = TextBoxName.GetText();
+            var roomid = TextBoxRoom.GetText();
+            if (ServerReady) {
+                HexagonServer.Emit("register", username +"|"+ roomid);
+            }
+
+            hexMap.StartMultiplayer();
+        }
+
         public void ResetGame()
         {
             CurrentGameState = GameState.NotStarted;
+            if (gameMode == GameMode.Multiplayer)
+            {
+                if (connectionState == ConnectionState.Waiting || connectionState == ConnectionState.Connected)
+                {
+                    HexagonServer.Emit("unregister");
+                }
+
+                connectionState = ConnectionState.NotConnected;
+            }            
+
             hexMap = null;
         }
     

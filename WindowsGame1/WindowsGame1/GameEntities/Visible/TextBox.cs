@@ -35,6 +35,8 @@ namespace InvasionWar.GameEntities.Visible
             currentString = str;
         }
 
+        public string GetText() { return currentString; }
+
         public bool isLabel = false;
 
         public static TextBox CreateTextBox(float left, float top, Vector2 ScreenScaleFactor, String path, float depth = 1.0f, int width = 0, int height = 0, bool isLabel = false)

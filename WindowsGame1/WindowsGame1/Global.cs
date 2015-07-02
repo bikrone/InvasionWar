@@ -40,5 +40,13 @@ namespace InvasionWar
                 storyboards.Remove(storyboard);
             }
         }
+
+        public static void UnfocusAllTextBox()
+        {
+            foreach (var textBox in textBoxes)
+            {
+                textBox.Unfocus();
+            }
+        }
     }
 }

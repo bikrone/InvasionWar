@@ -108,10 +108,9 @@ namespace InvasionWar.GameEntities.Visible
             visualState = VisualState.Idle;
         }
 
-        public void StartMultiple()
+        public void StartMultiplayer()
         {
-            ResetMap();
-            visualState = VisualState.Disabled;
+            ResetMap();          
         }
 
         public void AddGem(int i, int j, Gem.Team team)
@@ -250,6 +249,11 @@ namespace InvasionWar.GameEntities.Visible
                 }
             }
 
+            if (!isRemote && Global.thisGame.connectionState == Game1.ConnectionState.Connected)
+            {
+                Global.thisGame.HexagonServer.Emit("sendMove", "" + i + "," + j);
+            }
+
         }
 
         public void OnOvertakeCompleted(object sender, object argument)
@@ -286,6 +290,22 @@ namespace InvasionWar.GameEntities.Visible
             else State = MapState.BlueTurn;
 
             CheckWinState();
+            CheckWaitingStatus();
+        }
+
+        private void CheckWaitingStatus()
+        {
+            if (State == MapState.BlueTurn && Global.thisGame.playerState != Game1.PlayerState.Blue)
+            {
+                Global.thisGame.turnState = Game1.TurnState.Waiting;
+                return;
+            }
+            if (State == MapState.RedTurn && Global.thisGame.playerState != Game1.PlayerState.Red)
+            {
+                Global.thisGame.turnState = Game1.TurnState.Waiting;
+                return;
+            }
+            Global.thisGame.turnState = Game1.TurnState.Ready;
         }
 
         private bool isCannotMove()
@@ -489,6 +509,13 @@ namespace InvasionWar.GameEntities.Visible
 
         public override void Update(GameTime gameTime)
         {
+            if (Global.thisGame.gameMode == Game1.GameMode.Multiplayer)
+            {
+                if (Global.thisGame.connectionState != Game1.ConnectionState.Connected)
+                    visualState = VisualState.Disabled;
+                else visualState = VisualState.Idle;
+            }
+
             if (visualState == VisualState.Disabled) return;
             foreach (Gem gem in gems.Children)
             {
