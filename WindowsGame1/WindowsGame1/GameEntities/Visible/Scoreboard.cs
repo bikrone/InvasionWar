@@ -52,6 +52,7 @@ namespace InvasionWar.GameEntities.Visible
             if (map== null) return;
             RedCount.SetText("x" + Convert.ToString(map.ScoreRed));
             BlueCount.SetText("x" + Convert.ToString(map.ScoreBlue));
+
             Result.SetText("");
             if (map.winState == HexagonMap.WinState.Blue)
             {
@@ -62,6 +63,7 @@ namespace InvasionWar.GameEntities.Visible
                 Result.SetText("Team Red Wins!");
             }
 
+            Notify.SetText("");
             if (Global.thisGame.gameMode == Game1.GameMode.Multiplayer)
             {
                 var connectionState = Global.thisGame.connectionState;
@@ -102,7 +104,7 @@ namespace InvasionWar.GameEntities.Visible
                         Notify.SetColor(red);
                         break;                        
                 }
-            }
+            }            
 
             base.Update(gameTime);
         }
