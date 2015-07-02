@@ -13,7 +13,7 @@ namespace InvasionWar.Styles
     {
         public static void btn_OnMouseMove(object sender)
         {
-            var sendr = (My2DSprite)sender;
+            var sendr = (Sprite2D)sender;
             if (sendr == null) return;
 
             sendr.ChangeState(1);
@@ -21,7 +21,7 @@ namespace InvasionWar.Styles
 
         public static void btn_OnMouseLeave(object sender)
         {
-            var sendr = (My2DSprite)sender;
+            var sendr = (Sprite2D)sender;
             if (sendr == null) return;
             if (sendr.states[1].animations.Contains(sendr.states[2].animations[0]))
             {
@@ -32,7 +32,7 @@ namespace InvasionWar.Styles
 
         public static void btn_OnMouseDown(object sender)
         {
-            var sendr = (My2DSprite)sender;
+            var sendr = (Sprite2D)sender;
             if (sendr == null) return;
 
             if (!sendr.states[1].animations.Contains(sendr.states[2].animations[0]))
@@ -44,7 +44,7 @@ namespace InvasionWar.Styles
 
         public static void btn_OnMouseUp(object sender)
         {
-            var sendr = (My2DSprite)sender;
+            var sendr = (Sprite2D)sender;
             if (sendr.states[1].animations.Contains(sendr.states[2].animations[0]))
             {
                 sendr.states[1].RemoveAnimation(sendr.states[2].animations[0]);
@@ -52,7 +52,7 @@ namespace InvasionWar.Styles
             }
         }
 
-        public static void Assign(My2DSprite btn)
+        public static void Assign(Sprite2D btn)
         {
             Global.gMouseHelper.Register(btn);
             btn.ClearState();

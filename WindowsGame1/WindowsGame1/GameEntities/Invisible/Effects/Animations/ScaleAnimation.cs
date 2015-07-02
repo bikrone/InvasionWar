@@ -129,7 +129,7 @@ namespace InvasionWar.Effects.Animations
         }
 
 
-        public ScaleAnimation(Storyboard storyboard, My2DSprite sprite, float duration, Vector2 toScale, bool isReserveProperty = true, Vector2? fromScale = null, bool isAnimatedFromOrigin = false, bool isLoop = false, bool isInfinite = false)
+        public ScaleAnimation(Storyboard storyboard, Sprite2D sprite, float duration, Vector2 toScale, bool isReserveProperty = true, Vector2? fromScale = null, bool isAnimatedFromOrigin = false, bool isLoop = false, bool isInfinite = false)
         {
             this.isInfinite = isInfinite;
             this.isLoop = isLoop;

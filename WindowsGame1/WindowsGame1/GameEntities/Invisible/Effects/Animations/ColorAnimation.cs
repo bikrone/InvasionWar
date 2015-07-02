@@ -132,7 +132,7 @@ namespace InvasionWar.Effects.Animations
         }
 
 
-        public ColorAnimation(Storyboard storyboard, My2DSprite sprite, float duration, Vector4 toColor, bool isReserveProperty = true, Vector4? fromColor = null, bool isAnimatedFromOrigin = false, bool isLoop = false, bool isInfinite = false)
+        public ColorAnimation(Storyboard storyboard, Sprite2D sprite, float duration, Vector4 toColor, bool isReserveProperty = true, Vector4? fromColor = null, bool isAnimatedFromOrigin = false, bool isLoop = false, bool isInfinite = false)
         {
             this.isInfinite = isInfinite;
             this.isAnimatedFromOrigin = isAnimatedFromOrigin;

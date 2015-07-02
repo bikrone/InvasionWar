@@ -70,6 +70,11 @@ namespace InvasionWar.Helper
             return subtract;
         }
 
+        public static float CalculateSign(float from, float to)
+        {
+            return Sign(to - from);
+        }
+
         public static Vector4 CalculateSign(Vector4 from, Vector4 to)
         {
             Vector4 subtract = Vector4.Subtract(to, from);

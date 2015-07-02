@@ -13,7 +13,7 @@ namespace InvasionWar.GameEntities.Visible
         public int FragmentWidth, FragmentHeight;
         public int MapWidth, MapHeight;
 
-        public My2DSprite[,] Fragments;
+        public Sprite2D[,] Fragments;
 
         public Map(int nRows, int nCols, int fragmentWidth, int fragmentHeight, string strTexturePrefix)
         {
@@ -28,7 +28,7 @@ namespace InvasionWar.GameEntities.Visible
 
         private void LoadFragments(string strTexturePrefix)
         {
-            Fragments = new My2DSprite[nRows, nCols];
+            Fragments = new Sprite2D[nRows, nCols];
 
             for (int i=0; i<nRows; i++)
                 for (int j=0; j<nCols; j++)
@@ -37,11 +37,11 @@ namespace InvasionWar.GameEntities.Visible
                 }
         }
 
-        private My2DSprite LoadFragment(string strTexturePrefix, int i, int j)
+        private Sprite2D LoadFragment(string strTexturePrefix, int i, int j)
         {
-            My2DSprite result;
+            Sprite2D result;
 
-            result = new My2DSprite(LoadTexture(strTexturePrefix + i.ToString("00") + "_" + j.ToString("00")),
+            result = new Sprite2D(LoadTexture(strTexturePrefix + i.ToString("00") + "_" + j.ToString("00")),
                 j * FragmentWidth, i*FragmentHeight,
                 FragmentWidth, FragmentHeight);
 

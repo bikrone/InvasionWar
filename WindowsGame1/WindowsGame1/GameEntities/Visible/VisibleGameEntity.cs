@@ -8,9 +8,9 @@ namespace InvasionWar.GameEntities.Visible
 {
     public abstract class VisibleGameEntity : GameEntity
     {
-        public virtual void Draw(GameTime gameTime, object param)
+        public override void Draw(GameTime gameTime, object param)
         {
-
+            base.Draw(gameTime, param);
         }
     }
 }

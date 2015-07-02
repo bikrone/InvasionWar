@@ -17,6 +17,7 @@ namespace InvasionWar
         public static ContentManager Content;
 
         public static List<Storyboard> storyboards = new List<Storyboard>();
+        public static List<TextBox> textBoxes = new List<TextBox>();
 
         public static Game1 thisGame;
 

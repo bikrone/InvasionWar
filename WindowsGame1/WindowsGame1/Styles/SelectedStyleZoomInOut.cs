@@ -11,7 +11,7 @@ namespace InvasionWar.Styles
 {
     public class SelectedStyleZoomInOut
     {      
-        public static void Assign(My2DSprite btn)
+        public static void Assign(Sprite2D btn)
         {
             if (btn.states.Count > 0)
             {
@@ -28,7 +28,7 @@ namespace InvasionWar.Styles
             btn.ChangeState(0);
         }
 
-        public static void Unassign(My2DSprite btn)
+        public static void Unassign(Sprite2D btn)
         {
             btn.ChangeState(-1);
         }

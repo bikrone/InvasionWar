@@ -108,7 +108,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameEntities\Invisible\Effects\Animation.cs" />
+    <Compile Include="GameEntities\Invisible\Effects\Animations\ChangeTextureAnimation.cs" />
     <Compile Include="GameEntities\Invisible\Effects\Animations\ColorAnimation.cs" />
+    <Compile Include="GameEntities\Invisible\Effects\Animations\RotationAnimation.cs" />
     <Compile Include="GameEntities\Invisible\Effects\Animations\ScaleAnimation.cs" />
     <Compile Include="GameEntities\Invisible\Effects\Animations\TranslationAnimation.cs" />
     <Compile Include="GameEntities\Invisible\Effects\GraphFunctions\ConstantGraphFunction.cs" />
@@ -119,13 +121,16 @@
     <Compile Include="GameEntities\GameEntity.cs" />
     <Compile Include="GameEntities\Visible\Gem.cs" />
     <Compile Include="GameEntities\Visible\HexagonMap.cs" />
+    <Compile Include="GameEntities\Visible\Scoreboard.cs" />
+    <Compile Include="GameEntities\Visible\TextBox.cs" />
+    <Compile Include="GameEntities\Visible\Tile.cs" />
     <Compile Include="GameSettings.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="GameEntities\Invisible\InvisibleGameEntity.cs" />
     <Compile Include="GameEntities\Invisible\KeyboardHelper.cs" />
     <Compile Include="GameEntities\Visible\Map.cs" />
     <Compile Include="GameEntities\Invisible\MouseHelper.cs" />
-    <Compile Include="GameEntities\Visible\My2DSprite.cs" />
+    <Compile Include="GameEntities\Visible\Sprite2D.cs" />
     <Compile Include="Helper\PolygonCollider.cs" />
     <Compile Include="Helper\UtilityHelper.cs" />
     <Compile Include="Interfaces\IObservedSubject.cs" />
@@ -138,7 +143,12 @@
     <Compile Include="GameEntities\Visible\StaticSprite.cs" />
     <Compile Include="Styles\ButtonStyle.cs" />
     <Compile Include="Styles\CellStyle.cs" />
+    <Compile Include="Styles\ModernButtonStyle.cs" />
     <Compile Include="Styles\SelectedStyleZoomInOut.cs" />
+    <Compile Include="Styles\TextBoxStyle.cs" />
+    <Compile Include="Styles\UI\DefaultUI.cs" />
+    <Compile Include="Styles\UI\IGameGUI.cs" />
+    <Compile Include="Styles\UI\ModernUI.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

@@ -21,9 +21,16 @@ namespace InvasionWar.GameEntities.Visible
         public int TileWidth, TileHeight;
         public int MapWidth, MapHeight;
 
+        public int ScoreRed, ScoreBlue;
+
         public enum MapState
         {
             RedTurn, BlueTurn
+        }
+
+        public enum WinState
+        {
+            Red, Blue, None
         }
 
         public enum VisualState
@@ -32,64 +39,14 @@ namespace InvasionWar.GameEntities.Visible
         }
 
         public MapState State = MapState.RedTurn;
-        public VisualState visualState = VisualState.Idle;
+        public VisualState visualState = VisualState.Disabled;
 
-        public class Tile
-        {
-            public static HexagonMap map;
-            public My2DSprite sprite;
-            public int i;
-            public int j;
-
-            private static string[] CellImages = { "hexa_selected", "hexa_near", "hexa_far", "Hexa" };
-
-            public enum CellState { Selected, Near, Far, None }
-            public CellState State;         
-
-            public Tile(My2DSprite sprite, int i, int j)
-            {
-                State = CellState.None;        
-                this.sprite = sprite;
-                this.i = i;
-                this.j = j;
-                this.sprite.OnMouseUp += OnMouseUp;
-                Global.gMouseHelper.Register(this.sprite);
-            }
-
-           
-            public void OnMouseUp(object sender)
-            {
-                Tile.map.OnMouseClick(i, j);
-            }
-
-            public void ChangeState(CellState state)
-            {
-                if (State != state)
-                {
-                    State = state;
-                    switch (State)
-                    {
-                        case CellState.Selected:
-                            ((StaticSprite)sprite).ReloadTexture(@"Sprite\GameUI\"+Tile.CellImages[0]);
-                            break;
-                        case CellState.Near:
-                            ((StaticSprite)sprite).ReloadTexture(@"Sprite\GameUI\" + Tile.CellImages[1]);
-                            break;
-                        case CellState.Far:
-                            ((StaticSprite)sprite).ReloadTexture(@"Sprite\GameUI\" + Tile.CellImages[2]);
-                            break;
-                        default:
-                            ((StaticSprite)sprite).ReloadTexture(@"Sprite\GameUI\" + Tile.CellImages[3]);
-                            break;
-                    }
-                }
-            }
-        }        
+        public WinState winState = WinState.None;
 
         public Tile[,] Tiles;
         public Gem[,] Gems;
-        public List<Tile> tiles;
-        public List<Gem> gems;
+        public GameEntity tiles = new GameEntity();
+        public GameEntity gems = new GameEntity();
         public int[,] MapData;
 
         private Tile selectedCell = null;
@@ -109,20 +66,29 @@ namespace InvasionWar.GameEntities.Visible
             Tile.map = this;
 
             this.height = height;
-            this.nRows = height*2-1;
+            this.nRows = height * 2;
             this.nCols = height;
             this.TileWidth = tileWidth;
-            this.TileHeight = tileHeight;
-         
-            this.MapData = new int[height*2, height+1];
-            Tiles = new Tile[height * 2, height + 1];
-            Gems = new Gem[height * 2, height + 1];
+            this.TileHeight = tileHeight;                     
+            
             this.Left = left;
             this.Top = top;
 
-            gems = new List<Gem>();            
+            Tiles = new Tile[nRows, nCols];
 
             LoadTile(strTextures);
+            this.AddChild(gems);
+            this.AddChild(tiles);
+        }
+
+        public void ResetMap()
+        {
+            ClearAllCellState();
+            ScoreBlue = ScoreRed = 3;
+
+            gems.ClearChildren();
+
+            Gems = new Gem[nRows, nCols];
 
             AddGem(4, 0, Gem.Team.Blue);
             AddGem(16, 4, Gem.Team.Blue);
@@ -130,21 +96,34 @@ namespace InvasionWar.GameEntities.Visible
 
             AddGem(0, 4, Gem.Team.Red);
             AddGem(12, 0, Gem.Team.Red);
-            AddGem(12, 8, Gem.Team.Red);            
+            AddGem(12, 8, Gem.Team.Red);
 
-            //SelectCell(4, 0);
+            State = MapState.RedTurn;
+            winState = WinState.None;
+        }
+
+        public void StartSingle()
+        {
+            ResetMap();
+            visualState = VisualState.Idle;
+        }
+
+        public void StartMultiple()
+        {
+            ResetMap();
+            visualState = VisualState.Disabled;
         }
 
         public void AddGem(int i, int j, Gem.Team team)
         {
             Gem gem = new Gem(team, i, j);
             Gems[i, j] = gem;
-            gems.Add(gem);
+            gems.AddChild(gem);
         }
 
         private void ClearAllCellState()
         {
-            foreach (var tile in tiles)
+            foreach (Tile tile in tiles.Children)
             {
                 tile.ChangeState(Tile.CellState.None);
             }
@@ -152,7 +131,7 @@ namespace InvasionWar.GameEntities.Visible
 
         private void SetCellState(int i, int j, Tile.CellState state)
         {
-            if (i < 0 || i >= height * 2 || j < 0 || j > height) return;
+            if (i < 0 || i >= nRows || j < 0 || j >= nCols) return;
             if (Tiles[i, j] == null) return;
             if (Tiles[i,j].State == Tile.CellState.None && Gems[i,j] == null)
                 Tiles[i, j].ChangeState(state);
@@ -178,9 +157,37 @@ namespace InvasionWar.GameEntities.Visible
             }
         }
 
+
+        private int CountRelative(Gem gem)
+        {
+            int count = 0;
+            int[,] delta = { { -1, 1 }, { 1, 1 }, { 2, 0 }, { -2, 0 }, { -1, -1 }, { 1, -1 } };
+
+            bool[,] isVisisted = new bool[nRows, nCols];
+
+            for (int i = 0; i < 6; i++)
+            {
+                for (int t = 0; t < 6; t++)
+                {
+                    int ii = gem.i + delta[t, 0] + delta[i, 0];
+                    int jj = gem.j + delta[t, 1] + delta[i, 1];
+                    if (ii < 0 || ii >= nRows || jj < 0 || jj >= nCols) continue;
+                    if (ii == gem.i && jj == gem.j) continue;
+                    if (Gems[ii, jj] != null || Tiles[ii,jj]==null) continue;
+                    if (!isVisisted[ii, jj])
+                    {
+                        ++count;
+                        isVisisted[ii, jj] = true;
+                    }
+                }
+            }
+
+            return count;
+        }
+
         private void AddEnemyCellToList(List<Tile> list, Gem myGem, int i, int j)
         {
-            if (i < 0 || i >= height * 2 || j < 0 || j > height) return;
+            if (i < 0 || i >= nRows || j < 0 || j >= nCols) return;
             if (Tiles[i, j] != null && Gems[i,j]!=null && myGem.team!=Gems[i,j].team)
             {
                 list.Add(Tiles[i, j]);
@@ -200,8 +207,17 @@ namespace InvasionWar.GameEntities.Visible
             return list;
         }
 
-        public void SelectCell(int i, int j)
+        public void SelectCell(int i, int j, bool isRemote = false)
         {
+            if (winState != WinState.None) return;
+            if (!isRemote)
+            {
+                if (Global.thisGame.playerState != Game1.PlayerState.Both)
+                {
+                    if (State==MapState.RedTurn && Global.thisGame.playerState != Game1.PlayerState.Red) return;
+                    if (State==MapState.BlueTurn && Global.thisGame.playerState != Game1.PlayerState.Blue) return;
+                }
+            }
             if (visualState == VisualState.Transitioning || visualState == VisualState.Disabled) return;
             if (Tiles[i, j].State == Tile.CellState.None)
             {                
@@ -243,18 +259,86 @@ namespace InvasionWar.GameEntities.Visible
             if (argument != null)
             {
                 List<Gem> toFades = (List<Gem>)argument;
+                if (toFades.Count > 0)
+                {
+                    if (toFades[0].team == Gem.Team.Blue)
+                    {
+                        ScoreRed += toFades.Count;
+                        ScoreBlue -= toFades.Count;
+                    }
+                    else
+                    {
+                        ScoreRed -= toFades.Count;
+                        ScoreBlue += toFades.Count;
+                    }
+                }
                 foreach (var toFade in toFades)
                 {
-                    gems.Remove(toFade);
-                }
+                    gems.RemoveChild(toFade);
+                }                
             }
             if (sender is Storyboard)
             {
                 ((Storyboard)sender).OnCompleted -= OnOvertakeCompleted;
-            }
+            }            
 
             if (State == MapState.BlueTurn) State = MapState.RedTurn;
             else State = MapState.BlueTurn;
+
+            CheckWinState();
+        }
+
+        private bool isCannotMove()
+        {            
+            Gem.Team checkTeam = Gem.Team.Red;
+            if (State == MapState.BlueTurn) checkTeam = Gem.Team.Blue;
+
+            foreach (Gem gem in gems.Children)
+            {
+                if (gem.team == checkTeam && CountRelative(gem) > 0) return false;                
+            }
+            return true;
+        }
+
+        public void GoWinBlue()
+        {
+            winState = WinState.Blue;
+        }
+
+        public void GoWinRed()
+        {
+            winState = WinState.Red;
+        }
+
+        public void CheckWinState()
+        {
+            if (ScoreRed + ScoreBlue == tiles.Children.Count)
+            {
+                if (ScoreBlue < ScoreRed) GoWinRed();
+                else GoWinBlue();
+                return;
+            }
+
+            if (ScoreRed == 0)
+            {
+                GoWinBlue();
+                return;
+            }
+
+            if (ScoreBlue == 0)
+            {
+                GoWinRed();
+                return;
+            }
+
+            if (isCannotMove())
+            {
+                if (State == MapState.BlueTurn) GoWinRed();
+                else GoWinBlue();
+                return;
+            }
+
+
         }
 
         public void OvertakeEnemies(Gem gem)
@@ -275,7 +359,7 @@ namespace InvasionWar.GameEntities.Visible
                 toOvertake.i = adjacent.i;
                 toOvertake.j = adjacent.j;
                 
-                gems.Add(toOvertake);
+                gems.AddChild(toOvertake);
 
                 Gem toFade = Gems[adjacent.i, adjacent.j];
                 toFades.Add(toFade);      
@@ -301,7 +385,7 @@ namespace InvasionWar.GameEntities.Visible
                 ((Storyboard)sender).OnCompleted -= OnMoveCellCompleted;
             }
             Gem justMoved = (Gem)argument;
-            var timer = new Timer();
+            var timer = new Timer();            
             timer.Interval = GameSettings.GemTransitionToOvertake*1000.0f;
             timer.Elapsed += (s, e) => {
                 var t = (Timer)s;
@@ -321,7 +405,12 @@ namespace InvasionWar.GameEntities.Visible
             Gems[x, y].i = x;
             Gems[x, y].j = y;
 
-            this.gems.Add(Gems[x, y]);
+            this.gems.AddChild(Gems[x, y]);
+            if (Gems[x, y].team == Gem.Team.Blue)
+            {
+                ScoreBlue++;
+            }
+            else { ScoreRed++; }
 
             Storyboard sb = new Storyboard();
             Animation anim = new TranslationAnimation(sb, Gems[x, y].sprite, GameSettings.GemTranslationDuration, GetGemVisualPosition(x, y), false);
@@ -354,7 +443,7 @@ namespace InvasionWar.GameEntities.Visible
             SelectCell(i, j);
         }
 
-        private void AddHexagonCollider(My2DSprite sprite)
+        private void AddHexagonCollider(Sprite2D sprite)
         {
             PolygonCollider collider = new PolygonCollider();
             collider.AddVertex(new Vector2(0, sprite.Height / 2.0f));
@@ -370,8 +459,8 @@ namespace InvasionWar.GameEntities.Visible
         private void LoadTile(string[] strTextures)
         {
             if (tiles != null)
-                tiles.Clear();
-            else tiles = new List<Tile>();
+                tiles.ClearChildren();
+          
             int nTextures = strTextures.Length;
 
             int startRow = (height - 1) / 2;
@@ -390,7 +479,7 @@ namespace InvasionWar.GameEntities.Visible
 
                     AddHexagonCollider(Tiles[i, j].sprite);
                     CellStyle.Assign(Tiles[i,j].sprite);
-                    tiles.Add(Tiles[i,j]);
+                    tiles.AddChild(Tiles[i,j]);
                 }
                 if (j < (height - 1) / 2) startRow--;
                 else startRow++;
@@ -400,53 +489,33 @@ namespace InvasionWar.GameEntities.Visible
 
         public override void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
-            if (tiles != null)
+            if (visualState == VisualState.Disabled) return;
+            foreach (Gem gem in gems.Children)
             {
-                foreach (var tile in tiles)
-                    tile.sprite.Update(gameTime);
-
-                foreach (var gem in gems)
+                bool isAssign = false;
+                if ((gem.team == Gem.Team.Blue && State == MapState.BlueTurn) || (gem.team == Gem.Team.Red && State == MapState.RedTurn))
                 {
-                    bool isAssign = false;
-                    if ((gem.team == Gem.Team.Blue && State == MapState.BlueTurn) || (gem.team == Gem.Team.Red && State == MapState.RedTurn))
+                    if (visualState == VisualState.Idle)
                     {
-                        if (visualState == VisualState.Idle)
-                        {
-                            isAssign = true;
-                        }
+                        isAssign = true;
                     }
+                }
 
-                    if (isAssign)
-                    {
-                        SelectedStyleZoomInOut.Assign(gem.sprite);
-                    }
-                    else
-                    {
-                        SelectedStyleZoomInOut.Unassign(gem.sprite);
-                    }
-
-                    gem.sprite.Update(gameTime);
+                if (isAssign)
+                {
+                    SelectedStyleZoomInOut.Assign(gem.sprite);
+                }
+                else
+                {
+                    SelectedStyleZoomInOut.Unassign(gem.sprite);
                 }
             }
+            base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime, object param)
         {
-            int startRow = (height - 1) / 2;
-            int lastRow = (height-1)*2-startRow;
-
-            int i, j;
-
-            foreach (var tile in tiles)
-            {
-                tile.sprite.Draw(gameTime, (SpriteBatch)param);
-            }
-
-            foreach (var gem in gems)
-            {
-                gem.sprite.Draw(gameTime, (SpriteBatch)param);
-            }
+            base.Draw(gameTime, param);
         }
 
         private bool IsVisible(int i, int j)

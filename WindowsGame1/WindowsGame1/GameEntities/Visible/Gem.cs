@@ -6,12 +6,12 @@ using System.Text;
 
 namespace InvasionWar.GameEntities.Visible
 {
-    public class Gem
+    public class Gem : Sprite2D
     {
         public static HexagonMap map;
         public static Vector2 Size = new Vector2(41, 41);
         private static string[] SpritePath = { @"Sprite\GameUI\Player1", @"Sprite\GameUI\Player2" };
-        public My2DSprite sprite;
+        public Sprite2D sprite;
         public int i;
         public int j;
        
@@ -34,7 +34,7 @@ namespace InvasionWar.GameEntities.Visible
             this.team = team;
             this.i = i;
             this.j = j;
-       
+            this.AddChild(sprite);
         }
 
         public Gem(Gem gem2)
@@ -53,7 +53,7 @@ namespace InvasionWar.GameEntities.Visible
             {
                 sprite = StaticSprite.CreateSprite(visualPosition.X, visualPosition.Y, new Vector2(1, 1), SpritePath[1], 0.1f, width, height);
             }
-            
+            this.AddChild(sprite);
         }
 
         public void ChangeTeam()
@@ -69,5 +69,6 @@ namespace InvasionWar.GameEntities.Visible
                 ((StaticSprite)sprite).ReloadTexture(SpritePath[0]);
             }
         }
+        
     }        
 }

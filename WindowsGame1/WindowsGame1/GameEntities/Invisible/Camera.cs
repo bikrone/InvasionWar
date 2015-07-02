@@ -62,15 +62,15 @@ namespace InvasionWar.GameEntities.Invisible
         public override void Update(GameTime gameTime)
         {
             float deltaTranslation = TranslationVelocity*(float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (Global.gKeyboardHelper.IsKeyDown(Keys.A))
-            {
-                dx += deltaTranslation;
-            }
-            if (Global.gKeyboardHelper.IsKeyDown(Keys.D)) dx -= deltaTranslation;
-            if (Global.gKeyboardHelper.IsKeyDown(Keys.W)) dy += deltaTranslation;
-            if (Global.gKeyboardHelper.IsKeyDown(Keys.S)) dy -= deltaTranslation;            
+            //if (Global.gKeyboardHelper.IsKeyDown(Keys.A))
+            //{
+            //    dx += deltaTranslation;
+            //}
+            //if (Global.gKeyboardHelper.IsKeyDown(Keys.D)) dx -= deltaTranslation;
+            //if (Global.gKeyboardHelper.IsKeyDown(Keys.W)) dy += deltaTranslation;
+            //if (Global.gKeyboardHelper.IsKeyDown(Keys.S)) dy -= deltaTranslation;            
 
-            View = Matrix.CreateTranslation(dx, dy, 0);     
+            //View = Matrix.CreateTranslation(dx, dy, 0);     
         }
     }
 }

@@ -14,7 +14,7 @@ namespace InvasionWar.GameEntities.Visible
         public int TileWidth, TileHeight;
         public int MapWidth, MapHeight;
 
-        public My2DSprite[] Tiles;
+        public Sprite2D[] Tiles;
         public int[,] MapData;
 
         public TilingMap(int nRows, int nCols, int tileWidth, int tileHeight, string[] strTextures, int[,] mapData)
@@ -33,11 +33,11 @@ namespace InvasionWar.GameEntities.Visible
         private void LoadTile(string[] strTextures)
         {
             int nTextures = strTextures.Length;
-            Tiles = new My2DSprite[nTextures];
+            Tiles = new Sprite2D[nTextures];
 
             for (int i = 0; i < nTextures; i++)
             {
-                Tiles[i] = new My2DSprite(LoadTextures(strTextures[i]), 0, 0, TileWidth, TileHeight);
+                Tiles[i] = new Sprite2D(LoadTextures(strTextures[i]), 0, 0, TileWidth, TileHeight);
             }
         }
 

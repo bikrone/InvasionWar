@@ -103,6 +103,33 @@ namespace InvasionWar.GameEntities.Invisible.Effects.GraphFunctions
             return deltaDistance;
         }
 
+        public virtual float ApplyVelocity(TimeSpan from, TimeSpan to, TimeSpan totalDuration, float totalDistance)
+        {
+            if (from > totalDuration)
+            {
+                while (from > totalDuration)
+                {
+                    from = from.Subtract(totalDuration);
+                    to = to.Subtract(totalDuration);
+                }
+            }
+            else
+            {
+                if (to > totalDuration) to = totalDuration;
+            }
+
+            double scaleTime = ((double)totalDuration.TotalSeconds / (Right - Left));
+            float scaleDistance = totalDistance / (float)Area;
+
+            double l = Left + (double)from.TotalSeconds / scaleTime;
+            double r = Left + (double)to.TotalSeconds / scaleTime;
+
+            double distance = Integral(l, r);
+            float deltaDistance = scaleDistance * (float)distance;
+
+            return deltaDistance;
+        }
+
 
         public virtual Vector4 ApplyVelocity(TimeSpan from, TimeSpan to, TimeSpan totalDuration, Vector4 totalDistance)
         {

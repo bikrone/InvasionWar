@@ -34,7 +34,7 @@ namespace InvasionWar.Effects
             isStarted = true;
         }
 
-        public My2DSprite sprite { get; set; }
+        public Sprite2D sprite { get; set; }
 
         public Storyboard storyboard;
 
@@ -43,7 +43,7 @@ namespace InvasionWar.Effects
 
         }        
 
-        public Animation(Storyboard storyboard, My2DSprite sprite)
+        public Animation(Storyboard storyboard, Sprite2D sprite)
         {
             this.storyboard = storyboard;
             this.sprite = sprite;

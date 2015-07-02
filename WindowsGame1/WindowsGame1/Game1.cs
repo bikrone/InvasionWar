@@ -16,6 +16,7 @@ using InvasionWar.Effects;
 using InvasionWar.Effects.Animations;
 using InvasionWar.Styles;
 using InvasionWar.GameEntities.Invisible.Effects.GraphFunctions;
+using InvasionWar.Styles.UI;
 
 namespace InvasionWar
 {
@@ -30,10 +31,17 @@ namespace InvasionWar
             NotStarted, Started, Lost, Won
         }
 
+        public enum PlayerState
+        {
+            Red, Blue, Both
+        }
+
         Timer gameStateChanged = new Timer();        
 
         public GameState CurrentGameState = GameState.NotStarted;
         public GameState NextGameState = GameState.NotStarted;
+
+        public PlayerState playerState = PlayerState.Both;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -42,9 +50,7 @@ namespace InvasionWar
         public Vector2 ScreenSize;
         public Vector2 ScreenScaleFactor;
 
-        public HexagonMap hexMap;
-
-        private Storyboard mainStoryboard = new Storyboard();
+        public HexagonMap hexMap;        
 
         public Game1()
         {
@@ -79,141 +85,13 @@ namespace InvasionWar
             base.Initialize();
         }
 
-        My2DSprite btnPlay, GameTitle, Panel, TextPlayerName, TextRoomID, TextBoxName, TextBoxRoom, btnShop, btnHelp, btnSetting, btnExit;
+        public Sprite2D btnPlaySingle, GameTitle, Panel, TextPlayerName, TextRoomID, btnShop, btnHelp, btnSetting, btnExit, btnPlayMulti, background, btnSound;
+        public Sprite2D scoreBoard;
+        public TextBox TextBoxName, TextBoxRoom;
 
-        List<My2DSprite> sprites;       
+        public List<Sprite2D> sprites = new List<Sprite2D>();
 
-        public void LoadScene() {
-            sprites.Clear();
-
-            switch (CurrentGameState)
-            {
-                case GameState.NotStarted:
-                    // background                    
-                    sprites.Add(StaticSprite.CreateSprite(0, 0, ScreenScaleFactor, @"Sprite/GameUI/Background", 1.0f));
-
-                    // title
-                    if (GameTitle == null)
-                    {
-                        GameTitle = StaticSprite.CreateSprite(200, 182, ScreenScaleFactor, @"Sprite/GameUI/Title", 0.9f);
-                    }
-                    sprites.Add(GameTitle);
-
-                    // panel
-                    if (Panel==null) {
-                        Panel = StaticSprite.CreateSprite(215, 315, ScreenScaleFactor, @"Sprite/GameUI/Panel", 0.8f);
-                    }
-                    sprites.Add(Panel);
-
-                    if (TextPlayerName== null){
-                        TextPlayerName = StaticSprite.CreateSprite(273, 360, ScreenScaleFactor, @"Sprite/GameUI/TextPlayerName", 0.8f);
-                    }
-                    sprites.Add(TextPlayerName);
-
-                    if (TextRoomID == null) {
-                        TextRoomID = StaticSprite.CreateSprite(273, 430, ScreenScaleFactor, @"Sprite/GameUI/TextRoomID", 0.8f);
-                    }
-                    sprites.Add(TextRoomID);
-                    if (TextBoxName == null) {
-                        TextBoxName =StaticSprite.CreateSprite(454, 350, ScreenScaleFactor, @"Sprite/GameUI/TextBox", 0.8f);
-                    }
-                    sprites.Add(TextBoxName);
-
-                    if (TextBoxRoom == null) {
-                        TextBoxRoom = StaticSprite.CreateSprite(454, 420, ScreenScaleFactor, @"Sprite/GameUI/TextBox", 0.8f);
-                    }
-                    sprites.Add(TextBoxRoom);
-
-                    // btn play
-                    if (btnPlay == null)
-                    {
-                        btnPlay = StaticSprite.CreateSprite(440, 538, ScreenScaleFactor, @"Sprite/GameUI/btnPlay", 0.8f);
-                        
-                        btnPlay.OnMouseUp += TransitionNotStartedToStarted;
-
-                        ButtonStyle.Assign(btnPlay);                                          
-                    }
-
-                    sprites.Add(btnPlay);
-
-                    // small top icons
-                    if (btnShop == null)
-                    {
-                        btnShop = StaticSprite.CreateSprite(700, 22, ScreenScaleFactor, @"Sprite/GameUI/btnShop", 0.9f);
-                        ButtonStyle.Assign(btnShop);                        
-                    }
-                    sprites.Add(btnShop);
-
-                    if (btnSetting == null)
-                    {
-                        btnSetting = StaticSprite.CreateSprite(780, 22, ScreenScaleFactor, @"Sprite/GameUI/btnSetting", 0.9f);
-                        ButtonStyle.Assign(btnSetting);                        
-                    }
-                    sprites.Add(btnSetting);
-
-                    if (btnHelp == null)
-                    {
-                        btnHelp = StaticSprite.CreateSprite(860, 22, ScreenScaleFactor, @"Sprite/GameUI/btnHelp", 0.9f);
-                        ButtonStyle.Assign(btnHelp);                        
-                    }
-                    sprites.Add(btnHelp);
-
-                    if (btnExit == null)
-                    {
-                        btnExit = StaticSprite.CreateSprite(940, 22, ScreenScaleFactor, @"Sprite/GameUI/btnExit", 0.9f);
-                        ButtonStyle.Assign(btnExit);                        
-                    }
-                    sprites.Add(btnExit);
-
-                    break;
-
-                case GameState.Started:
-                    // background                    
-                    sprites.Add(StaticSprite.CreateSprite(0, 0, ScreenScaleFactor, @"Sprite/GameUI/Background", 1.0f));
-
-                    // small top icons
-                    if (btnShop == null)
-                    {
-                        btnShop = StaticSprite.CreateSprite(700, 22, ScreenScaleFactor, @"Sprite/GameUI/btnShop", 0.9f);
-                        ButtonStyle.Assign(btnShop);                        
-                    }
-                    sprites.Add(btnShop);
-
-                    if (btnSetting == null)
-                    {
-                        btnSetting = StaticSprite.CreateSprite(780, 22, ScreenScaleFactor, @"Sprite/GameUI/btnSetting", 0.9f);
-                        ButtonStyle.Assign(btnSetting);                        
-                    }
-                    sprites.Add(btnSetting);
-
-                    if (btnHelp == null)
-                    {
-                        btnHelp = StaticSprite.CreateSprite(860, 22, ScreenScaleFactor, @"Sprite/GameUI/btnHelp", 0.9f);
-                        ButtonStyle.Assign(btnHelp);                        
-                    }
-                    sprites.Add(btnHelp);
-
-                    if (btnExit == null)
-                    {
-                        btnExit = StaticSprite.CreateSprite(940, 22, ScreenScaleFactor, @"Sprite/GameUI/btnExit", 0.9f);
-                        ButtonStyle.Assign(btnExit);                        
-                    }
-                    sprites.Add(btnExit);
-
-                    if (hexMap == null)
-                    {
-                        string[] textures = new string[3];
-                        textures[0] = "Hexa";
-                        textures[1] = "hexa_near";
-                        textures[2] = "hexa_far";
-                        hexMap = new HexagonMap((int)(375.0f*ScreenScaleFactor.X), (int)(110.0f*ScreenScaleFactor.Y), 9, 45, 26, textures);
-                    }
-
-                    break;
-            }
-            
-
-        }
+        
 
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
@@ -227,22 +105,9 @@ namespace InvasionWar
             // TODO: use this.Content to load your game content here
             Global.Content = this.Content; // export this one to every component
             this.IsMouseVisible = true;
-            sprites = new List<My2DSprite>();
+            sprites = new List<Sprite2D>();
 
-            LoadScene();
-            
-            //string[] strTextures = {"Water", "Grass", "Highland", "Snow"};
-            //int[,] MapData = new int[10, 20];
-            //Random r = new Random();
-
-            //for (int i=0; i<10; i++) {
-            //    for (int j = 0; j < 20; j++)
-            //    {
-            //        MapData[i, j] = r.Next() % 4;
-            //    }
-            //}
-            
-            //map = new TilingMap(10, 20, 100, 100, strTextures, MapData);
+            new ModernUI().ApplyUI(this);
         }     
 
         /// <summary>
@@ -255,9 +120,11 @@ namespace InvasionWar
         }
 
         private void UpdateSprites(GameTime gameTime)
-        {            
+        {
+            if (sprites == null) return;
             for (int i = 0; i < sprites.Count; i++)
-                sprites[i].Update(gameTime);
+                if (sprites[i] != null) 
+                    sprites[i].Update(gameTime);
         }
 
         
@@ -307,50 +174,42 @@ namespace InvasionWar
 
             // TODO: Add your drawing code here        
             for (int i = 0; i < sprites.Count; i++)
-                sprites[i].Draw(gameTime, this.spriteBatch);
+            {                
+                if (sprites[i] != null)
+                    sprites[i].Draw(gameTime, this.spriteBatch);
+            }
 
             if (hexMap != null)
                 hexMap.Draw(gameTime, spriteBatch);
-
-            spriteBatch.End();
+            
             base.Draw(gameTime);
+            spriteBatch.End();
+           
         }
 
-        private void TransitionNotStartedToStarted(object sender)
-        {
-            float distance = 700;
-            float time = 1.0f;
-            NextGameState = GameState.Started;
-            mainStoryboard.Stop();
-            mainStoryboard.Clear();
-            mainStoryboard.OnCompleted += TransitionCompleted;
-
-            mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, GameTitle, time, new Vector2(GameTitle.Left, GameTitle.Top - distance), false));
-            mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, Panel, time, new Vector2(Panel.Left, Panel.Top - distance), false));
-            mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, TextPlayerName, time, new Vector2(TextPlayerName.Left, TextPlayerName.Top - distance), false));
-            mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, TextRoomID, time, new Vector2(TextRoomID.Left, TextRoomID.Top - distance), false));
-            mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, TextBoxRoom, time, new Vector2(TextBoxRoom.Left, TextBoxRoom.Top - distance), false));
-            mainStoryboard.AddAnimation(new TranslationAnimation(mainStoryboard, TextBoxName, time, new Vector2(TextBoxName.Left, TextBoxName.Top - distance), false));
-
-            Animation anim = new TranslationAnimation(mainStoryboard, btnPlay, time, new Vector2(btnPlay.Left, btnPlay.Top + distance), false);
-            anim.SetGraphFunction(new LinearGraphFunction());
-            mainStoryboard.AddAnimation(anim);
-            btnPlay.IsEnable = false;
-
-            mainStoryboard.Start();
-         
-        }
-
+     
         private void TransitionStartedToNotStarted(object sender)
         {
             
         }
 
-        private void TransitionCompleted(object sender, object argument)
+        public void StartGame()
         {
-            CurrentGameState = NextGameState;
-            LoadScene();
-            ((Storyboard)sender).OnCompleted -= TransitionCompleted;
+            CurrentGameState = GameState.Started;
+            if (hexMap == null)
+            {
+                string[] textures = new string[3];
+                textures[0] = "Hexa";
+                textures[1] = "hexa_near";
+                textures[2] = "hexa_far";
+                hexMap = new HexagonMap((int)(375.0f * ScreenScaleFactor.X), (int)(110.0f * ScreenScaleFactor.Y), 9, 45, 26, textures);
+            }
+            hexMap.StartSingle();
+        }
+        public void ResetGame()
+        {
+            CurrentGameState = GameState.NotStarted;
+            hexMap = null;
         }
     
     }

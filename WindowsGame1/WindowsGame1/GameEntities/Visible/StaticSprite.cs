@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 
 namespace InvasionWar.GameEntities.Visible
 {
-    public class StaticSprite : My2DSprite
+    public class StaticSprite : Sprite2D
     {
         public StaticSprite(List<Texture2D> textures,
             float left, float top, int width, int height, bool isReserveScale = false)

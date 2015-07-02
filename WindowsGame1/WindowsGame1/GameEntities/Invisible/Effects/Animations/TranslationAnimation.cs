@@ -122,7 +122,7 @@ namespace InvasionWar.Effects.Animations
                 graphFunction = new ConstantGraphFunction(duration);
         }
 
-        public TranslationAnimation(Storyboard storyboard, My2DSprite sprite, float duration, Vector2 toPosition, bool isReserveProperty = true, Vector2? fromPosition = null, bool isAnimatedFromOrigin = false, bool isLoop = false, bool isInfinite = false)
+        public TranslationAnimation(Storyboard storyboard, Sprite2D sprite, float duration, Vector2 toPosition, bool isReserveProperty = true, Vector2? fromPosition = null, bool isAnimatedFromOrigin = false, bool isLoop = false, bool isInfinite = false)
         {
             this.isInfinite = isInfinite;
             this.isLoop = isLoop;
